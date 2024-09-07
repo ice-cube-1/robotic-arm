@@ -48,24 +48,26 @@ class Arm:
     
     def plotInfo(self) -> list[list[float]]:
         return [[0,0, self.beam1.endx, self.beam2.endx], [0, self.height, self.beam1.endy, self.beam2.endy]]
+    
+    def sendToArduino(self) -> None:
+        arduino.write(bytes("1"+ str(int(math.degrees(arm.beam1.t+45))),'utf-8'))
+        arduino.write(bytes("2"+ str(int(math.degrees(arm.beam2.t+45))),'utf-8'))
 
 def update():
     if arm.setPosition(float(xin.get()), float(yin.get())):
         data = arm.plotInfo()
+        arm.sendToArduino()
         ax.clear()
         ax.plot(data[0], data[1])
         ax.set_xlim(-limit, limit)
         ax.set_ylim(0, limit+arm.height)
-        arduino.write(bytes(str(int(math.degrees(arm.beam1.t))),'utf-8'))
-        #time.sleep(0.05)
-        print(arduino.readline())
         canvas.draw()
 
 arm = Arm(80.25, Beam(101.25,-45,135),Beam(36,-45,135),25)
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.height**2)
-arduino = serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
+arduino = serial.Serial(port='COM6',   baudrate=115200)
 
 ax.set_ylim(0, limit+arm.height)
 ax.set_xlim(-limit, limit)
