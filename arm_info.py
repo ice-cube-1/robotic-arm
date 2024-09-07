@@ -18,6 +18,10 @@ class Beam:
         self.t: float = 0
         self.endx: float = 0
         self.endy: float = 0
+        
+    def sendData(self, id):
+        angle = 135-int(math.degrees(self.t))
+        arduino.write(bytes(id + str(angle) + "\n", 'utf-8'))
 
 class Arm:
     def __init__(self, height: float, beam1: Beam, beam2: Beam, maxWidth: float) -> None:
@@ -50,8 +54,8 @@ class Arm:
         return [[0,0, self.beam1.endx, self.beam2.endx], [0, self.height, self.beam1.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
-        arduino.write(bytes("1"+ str(int(math.degrees(arm.beam1.t+45))),'utf-8'))
-        arduino.write(bytes("2"+ str(int(math.degrees(arm.beam2.t+45))),'utf-8'))
+        self.beam1.sendData("1")
+        self.beam2.sendData("2")
 
 def update():
     if arm.setPosition(float(xin.get()), float(yin.get())):
@@ -63,7 +67,7 @@ def update():
         ax.set_ylim(0, limit+arm.height)
         canvas.draw()
 
-arm = Arm(80.25, Beam(101.25,-45,135),Beam(36,-45,135),25)
+arm = Arm(80.25, Beam(101.25,-45,115),Beam(36,-45,115),25)
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.height**2)
@@ -80,7 +84,7 @@ xin.pack()
 yin = tk.Entry(root)
 yin.pack()
 
-update_button = tk.Button(root, text="Update Plot", command=update)
+update_button = tk.Button(root, text="Update", command=update)
 update_button.pack()
 
 root.mainloop()
