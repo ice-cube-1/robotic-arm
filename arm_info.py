@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import serial
 
 def law_of_cosines(a: float, b: float, c: float) -> float:
     return math.acos((a * a + b * b - c * c) / (2 * a * b))
@@ -19,45 +20,55 @@ class Beam:
         self.endy: float = 0
 
 class Arm:
-    def __init__(self, height: int = 5, beam1: Beam = Beam(20, -80, 180), beam2: Beam = Beam(10, 10, 280)) -> None:
+    def __init__(self, height: float, beam1: Beam, beam2: Beam, maxWidth: float) -> None:
         self.beam1 = beam1
         self.beam2 = beam2
         self.height = height
+        self.maxWidth = maxWidth
 
     def setPosition(self, x: float, y: float) -> bool:
         try:
+            y = y-self.height
             dist: float = distance(x, y)
             D1 = math.atan2(y, x)
             D2 = law_of_cosines(dist, self.beam1.length, self.beam2.length)
             self.beam1.t = D1 + D2
             self.beam2.t = law_of_cosines(self.beam1.length, self.beam2.length, dist)
             self.beam1.endx = self.beam1.length * math.cos(self.beam1.t)
-            self.beam1.endy = self.beam1.length * math.sin(self.beam1.t)
+            self.beam1.endy = self.beam1.length * math.sin(self.beam1.t)+self.height
             self.beam2.endx = self.beam1.endx - self.beam2.length * math.cos(self.beam1.t + self.beam2.t)
-            self.beam2.endy = self.beam1.endy - self.beam2.length * math.sin(self.beam1.t + self.beam2.t) 
-            return True
+            self.beam2.endy = self.beam1.endy - self.beam2.length * math.sin(self.beam1.t + self.beam2.t)
+            return (
+                self.beam1.tmin <= self.beam1.t <= self.beam1.tmax) and (
+                    self.beam1.tmin <= self.beam1.t <= self.beam1.tmax) and (
+                        self.beam1.endy > self.maxWidth) and (
+                            self.beam2.endy > self.maxWidth)
         except:
             return False
     
     def plotInfo(self) -> list[list[float]]:
-        return [[0, self.beam1.endx, self.beam2.endx], [0, self.beam1.endy, self.beam2.endy]]
+        return [[0,0, self.beam1.endx, self.beam2.endx], [0, self.height, self.beam1.endy, self.beam2.endy]]
 
 def update():
-    arm.setPosition(float(xin.get()), float(yin.get()))
-    data = arm.plotInfo()
-    ax.clear()
-    ax.plot(data[0], data[1])
-    ax.set_xlim(-limit, limit)
-    ax.set_ylim(-limit, limit)
-    canvas.draw()
+    if arm.setPosition(float(xin.get()), float(yin.get())):
+        data = arm.plotInfo()
+        ax.clear()
+        ax.plot(data[0], data[1])
+        ax.set_xlim(-limit, limit)
+        ax.set_ylim(0, limit+arm.height)
+        arduino.write(bytes(str(int(math.degrees(arm.beam1.t))),'utf-8'))
+        #time.sleep(0.05)
+        print(arduino.readline())
+        canvas.draw()
 
-arm = Arm()
+arm = Arm(80.25, Beam(101.25,-45,135),Beam(36,-45,135),25)
 root = tk.Tk()
 fig, ax = plt.subplots()
-limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2)
+limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.height**2)
+arduino = serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
 
+ax.set_ylim(0, limit+arm.height)
 ax.set_xlim(-limit, limit)
-ax.set_ylim(-limit, limit)
 
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().pack()
