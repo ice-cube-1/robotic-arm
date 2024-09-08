@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import serial
+from time import sleep
 
 def law_of_cosines(a: float, b: float, c: float) -> float:
     return math.acos((a * a + b * b - c * c) / (2 * a * b))
@@ -19,9 +20,7 @@ class Beam:
         self.endx: float = 0
         self.endy: float = 0
         
-    def sendData(self, id):
-        angle = 135-int(math.degrees(self.t))
-        arduino.write(bytes(id + str(angle) + "\n", 'utf-8'))
+
 
 class Arm:
     def __init__(self, height: float, beam1: Beam, beam2: Beam, maxWidth: float) -> None:
@@ -42,11 +41,7 @@ class Arm:
             self.beam1.endy = self.beam1.length * math.sin(self.beam1.t)+self.height
             self.beam2.endx = self.beam1.endx - self.beam2.length * math.cos(self.beam1.t + self.beam2.t)
             self.beam2.endy = self.beam1.endy - self.beam2.length * math.sin(self.beam1.t + self.beam2.t)
-            return (
-                self.beam1.tmin <= self.beam1.t <= self.beam1.tmax) and (
-                    self.beam1.tmin <= self.beam1.t <= self.beam1.tmax) and (
-                        self.beam1.endy > self.maxWidth) and (
-                            self.beam2.endy > self.maxWidth)
+            return True
         except:
             return False
     
@@ -54,8 +49,13 @@ class Arm:
         return [[0,0, self.beam1.endx, self.beam2.endx], [0, self.height, self.beam1.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
-        self.beam1.sendData("1")
-        self.beam2.sendData("2")
+        angle = 135-int(math.degrees(self.beam1.t))
+        arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
+        print(angle)        
+        sleep(1)
+        angle = 180-int(math.degrees(self.beam2.t)-30)
+        arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
+        print(angle)
 
 def update():
     if arm.setPosition(float(xin.get()), float(yin.get())):
@@ -67,7 +67,7 @@ def update():
         ax.set_ylim(0, limit+arm.height)
         canvas.draw()
 
-arm = Arm(80.25, Beam(101.25,-45,115),Beam(36,-45,115),25)
+arm = Arm(80.25, Beam(101.25,math.radians(-45),math.radians(115)),Beam(36,math.radians(20),math.radians(200)),25)
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.height**2)
