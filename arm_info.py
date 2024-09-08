@@ -23,15 +23,18 @@ class Beam:
 
 
 class Arm:
-    def __init__(self, height: float, beam1: Beam, beam2: Beam, maxWidth: float) -> None:
+    def __init__(self, height: float, beam1: Beam, beam2: Beam, clawLength: float, maxWidth: float, clawOpen = 0) -> None:
         self.beam1 = beam1
         self.beam2 = beam2
         self.height = height
+        self.clawLength = clawLength
         self.maxWidth = maxWidth
+        self.clawOpen = clawOpen
 
     def setPosition(self, x: float, y: float) -> bool:
         try:
             y = y-self.height
+            x = x-self.clawLength
             dist: float = distance(x, y)
             D1 = math.atan2(y, x)
             D2 = law_of_cosines(dist, self.beam1.length, self.beam2.length)
@@ -46,16 +49,26 @@ class Arm:
             return False
     
     def plotInfo(self) -> list[list[float]]:
-        return [[0,0, self.beam1.endx, self.beam2.endx], [0, self.height, self.beam1.endy, self.beam2.endy]]
+        return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.clawLength], [0, self.height, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
         angle = 135-int(math.degrees(self.beam1.t))
-        arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
         print(angle)        
         sleep(1)
         angle = 180-int(math.degrees(self.beam2.t)-30)
-        arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
         print(angle)
+        sleep(1)
+        angle = 270-int(math.degrees(self.beam1.t+self.beam2.t))
+        # arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
+        print(angle)
+
+    def move_claw(self):
+        self.clawOpen = claw_pos.get()
+        angle = self.clawOpen*90
+        # arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
+        print(angle)  
 
 def update():
     if arm.setPosition(float(xin.get()), float(yin.get())):
@@ -67,11 +80,11 @@ def update():
         ax.set_ylim(0, limit+arm.height)
         canvas.draw()
 
-arm = Arm(80.25, Beam(101.25,math.radians(-45),math.radians(115)),Beam(36,math.radians(20),math.radians(200)),25)
+arm = Arm(59.5, Beam(67.6,math.radians(-45),math.radians(115)),Beam(67.6,math.radians(20),math.radians(200)),60,25)
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.height**2)
-arduino = serial.Serial(port='COM6',   baudrate=115200)
+# arduino = serial.Serial(port='COM6',   baudrate=115200)
 
 ax.set_ylim(0, limit+arm.height)
 ax.set_xlim(-limit, limit)
@@ -83,6 +96,8 @@ xin = tk.Entry(root)
 xin.pack()
 yin = tk.Entry(root)
 yin.pack()
+claw_pos = tk.IntVar()
+checkbutton = tk.Checkbutton(root, text="open claw", variable=claw_pos, onvalue=1, offvalue=0, command=arm.move_claw).pack()
 
 update_button = tk.Button(root, text="Update", command=update)
 update_button.pack()
