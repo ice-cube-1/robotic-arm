@@ -12,10 +12,8 @@ def distance(x: float, y: float) -> float:
     return math.sqrt(x * x + y * y)
 
 class Beam:
-    def __init__(self, length: float, tmin: float, tmax: float):
+    def __init__(self, length: float):
         self.length = length
-        self.tmin = math.radians(tmin)
-        self.tmax = math.radians(tmax)
         self.t: float = 0
         self.endx: float = 0
         self.endy: float = 0
@@ -85,7 +83,7 @@ def update():
         ax.set_ylim(0, limit+arm.beam0.length)
         canvas.draw()
 
-arm = Arm(Beam(59.5,0,0), Beam(67.6,math.radians(-45),math.radians(115)),Beam(67.6,math.radians(20),math.radians(200)),Beam(25,0,0))
+arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25))
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.beam0.length**2)
