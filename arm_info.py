@@ -19,7 +19,7 @@ class Beam:
         self.endx: float = 0
         self.endy: float = 0
         self.centerx: float = 0
-        self.centery: float = 0
+        self.centery: float = length/2
         
 
 
@@ -50,28 +50,36 @@ class Arm:
             self.beam1.centery = (self.beam1.endy+self.beam0.length)/2
             self.beam2.centerx = (self.beam1.endx+self.beam2.endx)/2
             self.beam2.centery = (self.beam1.endy+self.beam2.endy)/2
+            self.beam3.centerx = (self.beam2.endx*2+self.beam3.length)/2
+            self.beam3.centery = self.beam2.endy
+            print([[self.beam0.centerx, self.beam0.centery, self.beam0.absolute, self.beam0.length],
+                  [self.beam1.centerx, self.beam1.centery, self.beam1.absolute, self.beam0.length],
+                  [self.beam2.centerx, self.beam2.centery, self.beam2.absolute, self.beam0.length],
+                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam0.length]])
+            print(math.degrees(self.beam0.absolute), math.degrees(self.beam1.absolute), math.degrees(self.beam2.absolute), math.degrees(self.beam3.absolute))
             return True
         except:
             return False
     
     def plotInfo(self) -> list[list[float]]:
+        print([0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy])
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
         angle = 135-int(math.degrees(self.beam1.t))
-        arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
         sleep(1)
         angle = 180-int(math.degrees(self.beam2.t)-30)
-        arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
         sleep(1)
         angle = int(math.degrees(self.beam1.t+self.beam2.t)-90)
-        arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
         print(angle)
 
     def move_claw(self):
         self.clawOpen = claw_pos.get()
         angle = self.clawOpen*90
-        arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
+        # arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
 
 def update():
     if arm.setPosition(float(xin.get()), float(yin.get())):
@@ -88,7 +96,7 @@ arm = Arm(Beam(59.5,math.radians(90)), Beam(67.6),Beam(67.6),Beam(25))
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.beam0.length**2)
-arduino = serial.Serial(port='COM6', baudrate=115200)
+# arduino = serial.Serial(port='COM6', baudrate=115200)
 
 ax.set_ylim(0, limit+arm.beam0.length)
 ax.set_xlim(-limit, limit)

@@ -1,7 +1,10 @@
 import { initBuffers } from "./cube-buffer.js";
 import { drawScene } from "./draw-scene.js";
 
-const items = [[0,0,0]]
+var mousedown = false;
+var mousePos = {x:0,y:0}
+var prevmouse = {x:0,y:0}
+var positions = [[0, 29.75, 1.5707963267948966, 59.5], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 59.5], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 59.5], [87.5, 100.0, 0.0, 59.5]]
 
 main();
 function main() {
@@ -57,17 +60,13 @@ function main() {
     const texture = loadTexture(gl, [255,0,0, 255]);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, items,20);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 200);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
-    let mousePos = { x: 0, y: 0 };
-    canvas.addEventListener('mousemove', (e) => {
-        const pos = getMousePosition(e, canvas);
-        mousePos = pos;
+    canvas.addEventListener('mousemove', function(e) {
+        getMousePosition(e, canvas);
     });
-    let Xpos = 0;
-    let Ypos = 0;
 }
 
 
@@ -103,14 +102,24 @@ function loadTexture(gl, color) {
     return texture;
 }
 
-function isPowerOf2(value) {
-    return (value & (value - 1)) === 0;
-  }
+addEventListener("mousedown", (event) => {
+    mousedown = true;
+    const rect = event.target.getBoundingClientRect();
+    prevmouse.x = ((event.clientX - rect.left) / rect.width * 2 - 1) * 4;
+    prevmouse.y = ((event.clientY - rect.top) / rect.height * 2 - 1) * 2;
+});
+
+addEventListener("mouseup", (_) => {
+    mousedown = false;
+});
 
  function getMousePosition(event, target) {
     target = target || event.target;
-    const rect = target.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width * 2 - 1;
-    const y = (event.clientY - rect.top) / rect.height * 2 - 1;
-    return { x, y };
+    if (mousedown) {
+        const rect = target.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width * 2 - 1)*4;
+        const y = ((event.clientY - rect.top) / rect.height * 2 - 1)*2;
+        mousePos = {x: mousePos.x+x-prevmouse.x, y: mousePos.y+y-prevmouse.y}
+        prevmouse = {x: x,y: y}
+    }
 }

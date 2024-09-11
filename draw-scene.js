@@ -1,7 +1,7 @@
-function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, items, zoom) {
-    var xpos =-zoom * Math.sin(cameraRotationX*4) * Math.cos(cameraRotationY*4);
-    var ypos = zoom * Math.sin(cameraRotationY*4);
-    var zpos = zoom * Math.cos(cameraRotationX*4) * Math.cos(cameraRotationY*4);
+function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom) {
+    var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
+    var ypos = zoom * Math.sin(cameraRotationY);
+    var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
     gl.clearColor(0.8, 0.9, 1.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -11,11 +11,10 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, i
     const canvas = gl.canvas;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 100.0;
+    const zFar = 500.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    const modelViewMatrix = mat4.create();
-    console.log(xpos,ypos,zpos)
+    var modelViewMatrix = mat4.create();
     mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [0,0,0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
@@ -33,14 +32,16 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, i
     const vertexCount = 36
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
-    for (let i = 0; i < items.length; i++) {
-        mat4.translate(modelViewMatrix, modelViewMatrix, items[i]);
+    for (let i = 0; i < positions.length; i++) {
+        const initialMatrix = mat4.clone(modelViewMatrix);
+        mat4.rotate(modelViewMatrix, modelViewMatrix, (0 * Math.PI) / 180-positions[i][2], [0,0,1])
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0],positions[i][1],0]);
+        mat4.scale(modelViewMatrix,modelViewMatrix, [5, positions[i][3], 5])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
-        mat4.translate(modelViewMatrix, modelViewMatrix, items[i].map(value => -value));
+        mat4.copy(modelViewMatrix, initialMatrix);
     }
 }
-
 function setPositionAttribute(gl, buffers, programInfo) {
     const numComponents = 3;
     const type = gl.FLOAT;
