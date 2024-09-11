@@ -3,6 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
+    <style>
+      #xpos, #ypos, #updateButton {
+        position:absolute;
+        left:20px;
+      }
+      #xpos {
+        top: 20px;
+      }
+      #ypos {
+        top: 50px;
+      }
+      #updateButton {
+        top: 80px
+      }
+    </style>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
       integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
@@ -13,6 +28,10 @@
   </head>
 
   <body>
-    <canvas id="glcanvas" width="1920" height="1080" style="cursor: none;"></canvas>
+    <canvas id="glcanvas" width="1080" height="720"></canvas>
+    <input type="text" id="xpos" value="100">
+    <input type="text" id="ypos" value="100">
+    <button id="updateButton" onclick="updateInfo()">Update</button>
+
   </body>
 </html>
