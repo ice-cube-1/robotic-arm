@@ -46,16 +46,16 @@ class Arm:
             self.beam1.endy = self.beam1.length * math.sin(self.beam1.t)+self.beam0.length
             self.beam2.endx = self.beam1.endx - self.beam2.length * math.cos(self.beam1.t + self.beam2.t)
             self.beam2.endy = self.beam1.endy - self.beam2.length * math.sin(self.beam1.t + self.beam2.t)
-            self.beam1.centerx = self.beam1.endx/2
+            self.beam1.centerx = (self.beam1.endx)/2
             self.beam1.centery = (self.beam1.endy+self.beam0.length)/2
             self.beam2.centerx = (self.beam1.endx+self.beam2.endx)/2
             self.beam2.centery = (self.beam1.endy+self.beam2.endy)/2
             self.beam3.centerx = (self.beam2.endx*2+self.beam3.length)/2
             self.beam3.centery = self.beam2.endy
             print([[self.beam0.centerx, self.beam0.centery, self.beam0.absolute, self.beam0.length],
-                  [self.beam1.centerx, self.beam1.centery, self.beam1.absolute, self.beam0.length],
-                  [self.beam2.centerx, self.beam2.centery, self.beam2.absolute, self.beam0.length],
-                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam0.length]])
+                  [self.beam1.centerx, self.beam1.centery, self.beam1.absolute, self.beam1.length],
+                  [self.beam2.centerx, self.beam2.centery, self.beam2.absolute, self.beam2.length],
+                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam3.length]])
             print(math.degrees(self.beam0.absolute), math.degrees(self.beam1.absolute), math.degrees(self.beam2.absolute), math.degrees(self.beam3.absolute))
             return True
         except:
@@ -92,7 +92,7 @@ def update():
         ax.set_ylim(0, limit+arm.beam0.length)
         canvas.draw()
 
-arm = Arm(Beam(59.5,math.radians(90)), Beam(67.6),Beam(67.6),Beam(25))
+arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25,math.radians(90)))
 root = tk.Tk()
 fig, ax = plt.subplots()
 limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.beam0.length**2)

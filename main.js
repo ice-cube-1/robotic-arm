@@ -4,7 +4,7 @@ import { drawScene } from "./draw-scene.js";
 var mousedown = false;
 var mousePos = {x:0,y:0}
 var prevmouse = {x:0,y:0}
-var positions = [[0, 29.75, 1.5707963267948966, 59.5], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 59.5], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 59.5], [87.5, 100.0, 0.0, 59.5]]
+var positions = [[0, 29.75, 0.0, 59.5], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6], [87.5, 100.0, 1.5707963267948966, 25]]
 
 main();
 function main() {
@@ -60,7 +60,7 @@ function main() {
     const texture = loadTexture(gl, [255,0,0, 255]);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 200);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);

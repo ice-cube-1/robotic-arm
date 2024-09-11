@@ -11,11 +11,11 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const canvas = gl.canvas;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 500.0;
+    const zFar = 1000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     var modelViewMatrix = mat4.create();
-    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [0,0,0], [0,1,0]);
+    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [0,positions[0][3]*2,0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
@@ -34,8 +34,8 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const offset = 0;
     for (let i = 0; i < positions.length; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.rotate(modelViewMatrix, modelViewMatrix, (0 * Math.PI) / 180-positions[i][2], [0,0,1])
-        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0],positions[i][1],0]);
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
+        mat4.rotate(modelViewMatrix, modelViewMatrix, ((0 * Math.PI) / 180)+positions[i][2], [0,0,1])
         mat4.scale(modelViewMatrix,modelViewMatrix, [5, positions[i][3], 5])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
