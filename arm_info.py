@@ -52,12 +52,12 @@ class Arm:
             return [[self.beam0.centerx, self.beam0.centery, self.beam0.absolute, self.beam0.length],
                   [self.beam1.centerx, self.beam1.centery, self.beam1.absolute, self.beam1.length],
                   [self.beam2.centerx, self.beam2.centery, self.beam2.absolute, self.beam2.length],
-                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam3.length]]
+                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam3.length],
+                  [self.beam2.endx+self.beam3.length, self.beam2.endy]]
         except:
             return []
     
     def plotInfo(self) -> list[list[float]]:
-        print([0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy])
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
