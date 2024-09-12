@@ -5,12 +5,20 @@ var mousedown = false;
 var mousePos = {x:0,y:0}
 var prevmouse = {x:0,y:0}
 var positions = [[0, 29.75, 0.0, 59.5], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6], [87.5, 100.0, 1.5707963267948966, 25]]
+var websocket = new WebSocket("ws://localhost:8765")
 
 function updateInfo() {
     var x = document.getElementById("xpos").value;
     var y = document.getElementById("ypos").value;
-    console.log(x,y)
+    websocket.send(x+" "+y)
 }
+
+websocket.onmessage = (event) => {
+    var obj  = JSON.parse(event.data);
+    console.log(obj);
+    positions = obj
+};
+
 window.updateInfo = updateInfo;
 
 main();

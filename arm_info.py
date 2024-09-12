@@ -1,7 +1,4 @@
 import math
-import matplotlib.pyplot as plt
-import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import serial
 from time import sleep
 
@@ -31,7 +28,7 @@ class Arm:
         self.beam3 = beam3
         self.clawOpen = clawOpen
 
-    def setPosition(self, x: float, y: float) -> bool:
+    def setPosition(self, x: float, y: float) -> list[list[float]]:
         try:
             y = y-self.beam0.length
             x = x-self.beam3.length
@@ -52,14 +49,12 @@ class Arm:
             self.beam2.centery = (self.beam1.endy+self.beam2.endy)/2
             self.beam3.centerx = (self.beam2.endx*2+self.beam3.length)/2
             self.beam3.centery = self.beam2.endy
-            print([[self.beam0.centerx, self.beam0.centery, self.beam0.absolute, self.beam0.length],
+            return [[self.beam0.centerx, self.beam0.centery, self.beam0.absolute, self.beam0.length],
                   [self.beam1.centerx, self.beam1.centery, self.beam1.absolute, self.beam1.length],
                   [self.beam2.centerx, self.beam2.centery, self.beam2.absolute, self.beam2.length],
-                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam3.length]])
-            print(math.degrees(self.beam0.absolute), math.degrees(self.beam1.absolute), math.degrees(self.beam2.absolute), math.degrees(self.beam3.absolute))
-            return True
+                  [self.beam3.centerx, self.beam3.centery, self.beam3.absolute, self.beam3.length]]
         except:
-            return False
+            return []
     
     def plotInfo(self) -> list[list[float]]:
         print([0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy])
@@ -76,42 +71,8 @@ class Arm:
         # arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
         print(angle)
 
-    def move_claw(self):
-        self.clawOpen = claw_pos.get()
+    def move_claw(self, claw_pos):
+        self.clawOpen = claw_pos
         angle = self.clawOpen*90
         # arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
-
-def update():
-    if arm.setPosition(float(xin.get()), float(yin.get())):
-        data = arm.plotInfo()
-        print(math.degrees(arm.beam0.absolute), math.degrees(arm.beam1.absolute), math.degrees(arm.beam2.absolute), math.degrees(arm.beam3.absolute))
-        arm.sendToArduino()
-        ax.clear()
-        ax.plot(data[0], data[1])
-        ax.set_xlim(-limit+arm.beam3.length, limit+arm.beam3.length)
-        ax.set_ylim(0, limit+arm.beam0.length)
-        canvas.draw()
-
-arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25,math.radians(90)))
-root = tk.Tk()
-fig, ax = plt.subplots()
-limit = math.sqrt(arm.beam1.length**2 + arm.beam2.length**2+arm.beam0.length**2)
-# arduino = serial.Serial(port='COM6', baudrate=115200)
-
-ax.set_ylim(0, limit+arm.beam0.length)
-ax.set_xlim(-limit, limit)
-
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.get_tk_widget().pack()
-
-xin = tk.Entry(root)
-xin.pack()
-yin = tk.Entry(root)
-yin.pack()
-claw_pos = tk.IntVar()
-checkbutton = tk.Checkbutton(root, text="open claw", variable=claw_pos, onvalue=1, offvalue=0, command=arm.move_claw).pack()
-
-update_button = tk.Button(root, text="Update", command=update)
-update_button.pack()
-
-root.mainloop()
+        
