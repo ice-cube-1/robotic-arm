@@ -72,7 +72,7 @@ function main() {
         },
       };            
     const buffers = initBuffers(gl);
-    const texture = loadTexture(gl, [255,0,0, 255]);
+    const texture = loadTexture(gl, [100,100,100, 255]);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
         drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500);
