@@ -71,10 +71,8 @@ class Arm:
         sleep(1)
         angle = int(math.degrees(self.beam1.t+self.beam2.t)-90)
         # self.arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
-        print(angle)
 
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos
-        angle = self.clawOpen*90
-        # self.arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
+        # self.arduino.write(bytes("4" + str(claw_pos) + "\n", 'utf-8'))
         

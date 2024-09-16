@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
     <style>
-      #xpos, #ypos, #updateButton {
+      #xpos, #ypos, #updateButton, #claw {
         position:absolute;
         left:20px;
       }
@@ -16,6 +16,9 @@
       }
       #updateButton {
         top: 80px
+      }
+      #claw {
+        top: 110px
       }
     </style>
     <script
@@ -32,6 +35,6 @@
     <input type="text" id="xpos" value="100">
     <input type="text" id="ypos" value="100">
     <button id="updateButton" onclick="updateInfo()">Update</button>
-
+    <input type="checkbox" id="claw" name="Open claw" onclick="moveClaw(this)" />
   </body>
 </html>

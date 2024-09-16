@@ -9,6 +9,10 @@ async def echo(websocket):
     arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25,math.radians(90)))
     async for message in websocket:
         message = message.split()
+        if message[0] == "claw":
+            print(message[1])
+            arm.move_claw(float(message[1]))
+            return
         positions = arm.setPosition(float(message[0]),float(message[1]))
         print(json.dumps(positions))
         if positions != []:

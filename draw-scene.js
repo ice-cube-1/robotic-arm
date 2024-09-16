@@ -1,4 +1,4 @@
-function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom) {
+function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle) {
     var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     var ypos = zoom * Math.sin(cameraRotationY);
     var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
@@ -16,7 +16,6 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     var modelViewMatrix = mat4.create();
     mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [positions[4][0], positions[4][1],0], [0,1,0]);
-    //mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [0, 0, 0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
@@ -42,12 +41,11 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
-    const angle = 45
     for (let i = -1; i<=1; i+=2) {
         const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(30*Math.cos(angle)), positions[4][1]*2-5, i*(30*Math.cos(angle))])
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(30*Math.cos(angle)), positions[4][1]*2-5, i*(30*Math.sin(angle))])
         mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/2, [0,0,1])
-        mat4.rotate(modelViewMatrix,modelViewMatrix, i*-angle*Math.PI/180, [1,0,0])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, i*-angle, [1,0,0])
         mat4.scale(modelViewMatrix,modelViewMatrix, [5, 30, 5])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
