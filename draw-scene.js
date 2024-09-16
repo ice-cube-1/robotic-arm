@@ -36,8 +36,19 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     for (let i = 0; i < 4; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
-        mat4.rotate(modelViewMatrix, modelViewMatrix, ((0 * Math.PI) / 180)+positions[i][2], [0,0,1])
+        mat4.rotate(modelViewMatrix, modelViewMatrix, positions[i][2], [0,0,1])
         mat4.scale(modelViewMatrix,modelViewMatrix, [15, positions[i][3], 15])
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        mat4.copy(modelViewMatrix, initialMatrix);
+    }
+    const angle = 45
+    for (let i = -1; i<=1; i+=2) {
+        const initialMatrix = mat4.clone(modelViewMatrix);
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(30*Math.cos(angle)), positions[4][1]*2-5, i*(30*Math.cos(angle))])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/2, [0,0,1])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, i*-angle*Math.PI/180, [1,0,0])
+        mat4.scale(modelViewMatrix,modelViewMatrix, [5, 30, 5])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);

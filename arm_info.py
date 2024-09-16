@@ -27,7 +27,7 @@ class Arm:
         self.beam2 = beam2
         self.beam3 = beam3
         self.clawOpen = clawOpen
-        self.arduino = serial.Serial(port='COM6', baudrate=115200)
+        # self.arduino = serial.Serial(port='COM6', baudrate=115200)
 
     def setPosition(self, x: float, y: float) -> list[list[float]]:
         try:
@@ -64,17 +64,17 @@ class Arm:
     
     def sendToArduino(self) -> None:
         angle = 135-int(math.degrees(self.beam1.t))
-        self.arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
+        # self.arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
         sleep(1)
         angle = 180-int(math.degrees(self.beam2.t)-30)
-        self.arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
+        # self.arduino.write(bytes("2" + str(angle) + "\n", 'utf-8'))
         sleep(1)
         angle = int(math.degrees(self.beam1.t+self.beam2.t)-90)
-        self.arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
+        # self.arduino.write(bytes("3" + str(angle) + "\n", 'utf-8'))
         print(angle)
 
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos
         angle = self.clawOpen*90
-        self.arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
+        # self.arduino.write(bytes("4" + str(angle) + "\n", 'utf-8'))
         
