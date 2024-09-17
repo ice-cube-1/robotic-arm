@@ -12,11 +12,11 @@ async def echo(websocket):
         if message[0] == "claw":
             print(message[1])
             arm.move_claw(float(message[1]))
-            return
-        positions = arm.setPosition(float(message[0]),float(message[1]))
-        print(json.dumps(positions))
-        if positions != []:
-            await websocket.send(json.dumps(positions))
+        else:
+            positions = arm.setPosition(float(message[0]),float(message[1]))
+            print(json.dumps(positions))
+            if positions != []:
+                await websocket.send(json.dumps(positions))
 
 start_server = websockets.serve(echo, "localhost", 8765)
 
