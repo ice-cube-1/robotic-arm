@@ -1,5 +1,6 @@
 import asyncio
 import websockets
+from aiohttp import web
 from arm_info import Arm, Beam
 import math
 import json
@@ -18,9 +19,20 @@ async def echo(websocket):
             if positions != []:
                 await websocket.send(json.dumps(positions))
 
-start_server = websockets.serve(echo, "localhost", 8765)
+async def handle_html(_):
+        return web.FileResponse('./index.html')
 
-asyncio.get_event_loop().run_until_complete(start_server)
+async def start_servers():
+    webocket_server = websockets.serve(echo, "192.168.5.208", 8765)
+    app = web.Application()
+    app.router.add_get('/', handle_html)
+    app.router.add_static('/static/', path='./static', name='static')
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "192.168.5.208", 8080)
+    await asyncio.gather(webocket_server, site.start())
+
+asyncio.get_event_loop().run_until_complete(start_servers())
 asyncio.get_event_loop().run_forever()
 
 
