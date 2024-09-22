@@ -23,13 +23,13 @@ async def handle_html(_):
         return web.FileResponse('./index.html')
 
 async def start_servers():
-    webocket_server = websockets.serve(echo, "192.168.5.208", 8765)
+    webocket_server = websockets.serve(echo, "192.168.137.81", 8765)
     app = web.Application()
     app.router.add_get('/', handle_html)
     app.router.add_static('/static/', path='./static', name='static')
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "192.168.5.208", 8080)
+    site = web.TCPSite(runner, "192.168.137.81", 8080)
     await asyncio.gather(webocket_server, site.start())
 
 asyncio.get_event_loop().run_until_complete(start_servers())
