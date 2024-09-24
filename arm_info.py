@@ -63,7 +63,7 @@ class Arm:
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
-        angle = 135-int(math.degrees(self.beam1.t))
+        angle = 135-int(math.degrees(self.beam1.t)+calcAdjustment(self.beam1.absolute))
         self.arduino.write(bytes("1" + str(angle) + "\n", 'utf-8'))
         sleep(2)
         angle = 180-int(math.degrees(self.beam2.t)-30)
@@ -76,3 +76,8 @@ class Arm:
         self.clawOpen = claw_pos
         self.arduino.write(bytes("4" + str(claw_pos) + "\n", 'utf-8'))
         
+def calcAdjustment(beamAbs: float) -> float:
+    if (beamAbs < 0):
+        return -180-math.degrees(beamAbs)/10
+    else: 
+        return 180-math.degrees(beamAbs)/10
