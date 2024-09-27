@@ -5,8 +5,11 @@ var mousedown = false;
 var mousePos = {x:0,y:0}
 var prevmouse = {x:0,y:0}
 var positions = [[0, 29.75, 0.0, 59.5], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6], [87.5, 100.0, 1.5707963267948966, 25],[0,0]]
+var pixelData = []
 var angle = 0;
 var websocket = new WebSocket("ws://192.168.137.81:8765")
+const canvas = document.getElementById('photocanvas');
+const ctx = canvas.getContext('2d');
 
 function updateInfo() {
     var x = document.getElementById("xpos").value;
@@ -15,6 +18,7 @@ function updateInfo() {
 }
 
 function moveClaw(checkbox) {
+    websocket.send("photo")
     if (checkbox.checked) {
         websocket.send("claw 45")
         angle = Math.PI/4
@@ -26,8 +30,17 @@ function moveClaw(checkbox) {
 
 websocket.onmessage = (event) => {
     var obj  = JSON.parse(event.data);
-    console.log(obj);
-    positions = obj
+    if (obj.length == 480) {
+        for (let y = 0; y < 480; y++) {
+            for (let x = 0; x < 640; x++) {
+                const [r, g, b] = obj[y][x];
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+    } else {
+        positions = obj
+    }
 };
 
 window.updateInfo = updateInfo;

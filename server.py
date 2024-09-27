@@ -4,18 +4,23 @@ from aiohttp import web
 from arm_info import Arm, Beam
 import math
 import json
-
+from camera import Camera
 
 async def echo(websocket):
     arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25,math.radians(90)))
+    camera = Camera()
     async for message in websocket:
         message = message.split()
         if message[0] == "claw":
             print(message[1])
             arm.move_claw(float(message[1]))
+        elif message[0] == "photo":
+            print("photo requested")
+            photo = camera.takePhoto()
+            photo = [[[int(k)for k in j[:3]] for j in i] for i in photo]
+            await websocket.send(json.dumps(photo))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
-            print(json.dumps(positions))
             if positions != []:
                 await websocket.send(json.dumps(positions))
 

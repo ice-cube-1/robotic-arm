@@ -1,9 +1,10 @@
 from picamera2 import Picamera2
 
-def setup():
-    picam2 = Picamera2()
-    picam2.start()
-    return picam2
 
-def takePhoto(camera): 
-    return camera.capture_array()
+class Camera:
+    def __init__(self):
+        self.camera = Picamera2()
+        self.camera.start()
+
+    def takePhoto(self): 
+        return self.camera.capture_array()
