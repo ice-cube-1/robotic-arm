@@ -16,6 +16,9 @@ function updateInfo() {
 
 function takePhoto() {
     websocket.send("photo")
+}
+
+function distance() {
     websocket.send("distance")
 }
 
@@ -34,7 +37,7 @@ websocket.onmessage = (event) => {
         const img = document.getElementById('camera');
         img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
     } else if (event.data.startsWith("distance: ")) {
-        console.log(event.data.substring(10))
+        document.getElementById("currentDistance").textContent = event.data.substring(10);
     } else {
         var obj  = JSON.parse(event.data);
         positions = obj
@@ -44,6 +47,7 @@ websocket.onmessage = (event) => {
 window.updateInfo = updateInfo;
 window.moveClaw = moveClaw;
 window.takePhoto = takePhoto;
+window.distance = distance;
 
 main();
 function main() {
