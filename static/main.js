@@ -14,8 +14,11 @@ function updateInfo() {
     websocket.send(x+" "+y)
 }
 
-function moveClaw(checkbox) {
+function takePhoto() {
     websocket.send("photo")
+}
+
+function moveClaw(checkbox) {
     if (checkbox.checked) {
         websocket.send("claw 45")
         angle = Math.PI/4
@@ -37,6 +40,7 @@ websocket.onmessage = (event) => {
 
 window.updateInfo = updateInfo;
 window.moveClaw = moveClaw;
+window.takePhoto = takePhoto;
 
 main();
 function main() {
