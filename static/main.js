@@ -16,6 +16,7 @@ function updateInfo() {
 
 function takePhoto() {
     websocket.send("photo")
+    websocket.send("distance")
 }
 
 function moveClaw(checkbox) {
@@ -32,6 +33,8 @@ websocket.onmessage = (event) => {
     if (event.data == "image") {
         const img = document.getElementById('camera');
         img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
+    } else if (event.data.startsWith("distance: ")) {
+        console.log(event.data.substring(10))
     } else {
         var obj  = JSON.parse(event.data);
         positions = obj

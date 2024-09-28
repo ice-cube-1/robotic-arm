@@ -18,6 +18,8 @@ async def echo(websocket):
             print("photo requested")
             camera.takePhoto()
             await websocket.send("image")
+        elif message[0] == "distance":
+            await websocket.send("distance: "+ str(camera.distance()))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             if positions != []:
