@@ -16,9 +16,8 @@ async def echo(websocket):
             arm.move_claw(float(message[1]))
         elif message[0] == "photo":
             print("photo requested")
-            photo = camera.takePhoto()
-            photo = [[[int(k)for k in j[:3]] for j in i] for i in photo]
-            await websocket.send(json.dumps(photo))
+            camera.takePhoto()
+            await websocket.send("image")
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             if positions != []:
