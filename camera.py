@@ -31,6 +31,6 @@ class Camera:
         if contours:
             w = cv2.boundingRect(contours[0])[2]
             distance = 46600/w
-            return distance
+            return distance-20
         else:
             return None
