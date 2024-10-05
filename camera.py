@@ -19,15 +19,18 @@ class Camera:
     def distance(self) -> float | None:
         image = self.camera.capture_array()
         hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        lower_green = np.array([40, 40, 40])
-        upper_green = np.array([70, 255, 255])
-        mask = cv2.inRange(hsv_image, lower_green, upper_green)
-        green_object = cv2.bitwise_and(image, image, mask=mask)
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        lower_red1 = np.array([0, 100, 60])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 100, 60])
+        upper_red2 = np.array([180, 255, 255])
+        mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
+        red_object = cv2.bitwise_and(image, image, mask=mask1 | mask2)
+        contours, _ = cv2.findContours(mask1 | mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
         if contours:
             w = cv2.boundingRect(contours[0])[2]
-            distance = (56 * 631.6970304811) / w**0.7938
+            distance = 46600/w
             return distance
         else:
-            return none
+            return None
