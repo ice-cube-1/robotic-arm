@@ -14,6 +14,14 @@ function updateInfo() {
     websocket.send(x+" "+y)
 }
 
+function takePhoto() {
+    websocket.send("photo")
+}
+
+function distance() {
+    websocket.send("distance")
+}
+
 function moveClaw(checkbox) {
     if (checkbox.checked) {
         websocket.send("claw 45")
@@ -25,13 +33,21 @@ function moveClaw(checkbox) {
 }
 
 websocket.onmessage = (event) => {
-    var obj  = JSON.parse(event.data);
-    console.log(obj);
-    positions = obj
+    if (event.data == "image") {
+        const img = document.getElementById('camera');
+        img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
+    } else if (event.data.startsWith("distance: ")) {
+        document.getElementById("currentDistance").textContent = event.data.substring(10);
+    } else {
+        var obj  = JSON.parse(event.data);
+        positions = obj
+    }
 };
 
 window.updateInfo = updateInfo;
 window.moveClaw = moveClaw;
+window.takePhoto = takePhoto;
+window.distance = distance;
 
 main();
 function main() {

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
     <style>
-      #xpos, #ypos, #updateButton, #claw {
+      #xpos, #ypos, #updateButton, #claw, #photoButton, #distanceButton, #currentDistance {
         position:absolute;
         left:20px;
       }
@@ -15,10 +15,19 @@
         top: 50px;
       }
       #updateButton {
-        top: 80px
+        top: 80px;
       }
       #claw {
-        top: 110px
+        top: 110px;
+      } 
+      #photoButton {
+        top: 140px;
+      } 
+      #distanceButton {
+        top: 170px;
+      }
+      #currentDistance {
+        top: 200px;
       }
     </style>
     <script
@@ -32,9 +41,13 @@
 
   <body>
     <canvas id="glcanvas" width="1080" height="720"></canvas>
+    <img id="camera" src="" width="640" height="480">
     <input type="text" id="xpos" value="100">
     <input type="text" id="ypos" value="100">
     <button id="updateButton" onclick="updateInfo()">Update</button>
     <input type="checkbox" id="claw" name="Open claw" onclick="moveClaw(this)" />
+    <button id="photoButton" onclick="takePhoto()">Take Photo</button>
+    <button id="distanceButton" onclick="distance()">Calculate distance to green object</button>
+    <div id="currentDistance"></div>
   </body>
 </html>
