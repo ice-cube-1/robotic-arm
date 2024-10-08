@@ -16,10 +16,13 @@ void setup()
 void  loop() {
   while (!Serial.available());
   data = Serial.readString();
-  if (data.substring(0,1).toInt() == 5) {
-     stepper.step(data.substring(1).toInt());
-  } else {
-    servo[data.substring(0,1).toInt()-1].write(data.substring(1).toInt());    
+  while (data.length() >= 4) {
+    if (data.substring(0,1).toInt() == 5) {
+      stepper.step(data.substring(1).toInt());
+    } else {
+      servo[data.substring(0,1).toInt()-1].write(data.substring(1).toInt());    
+    }
+    Serial.println(data.toInt());
+    data = data.substring(4);
   }
-  Serial.println(data.toInt()+1);
 }
