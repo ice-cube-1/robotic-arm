@@ -28,6 +28,7 @@ class Arm:
         self.beam3 = beam3
         self.clawOpen = clawOpen
         self.arduino = serial.Serial('/dev/ttyUSB0', baudrate=115200)
+        self.stepperPos = 0
 
     def setPosition(self, x: float, y: float) -> list[list[float]]:
         try:
@@ -71,8 +72,9 @@ class Arm:
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos
         self.arduino.write(bytes("4" + str(claw_pos).zfill(3) + "\n", 'utf-8'))
+        self.stepperPos+=10
         sleep(2)
-        self.arduino.write(bytes("5020","utf-8"))
+        self.arduino.write(bytes(f"5{str(self.stepperPos%200).zfill(3)}\n","utf-8"))
         
 def calcAdjustment(beamAbs: float) -> float:
     if (beamAbs < 0):
