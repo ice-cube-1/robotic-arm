@@ -7,7 +7,7 @@ import json
 from camera import Camera
 
 async def echo(websocket):
-    arm = Arm(Beam(59.5), Beam(67.6),Beam(67.6),Beam(25,math.radians(90)))
+    arm = Arm(Beam(59.5), Beam(67.6),Beam(70.6),Beam(25,math.radians(90)))
     camera = Camera()
     async for message in websocket:
         message = message.split()
@@ -22,6 +22,7 @@ async def echo(websocket):
             await websocket.send("distance: "+ str(camera.distance()))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
+            print(positions)
             if positions != []:
                 await websocket.send(json.dumps(positions))
 

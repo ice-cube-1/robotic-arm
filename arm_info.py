@@ -65,9 +65,11 @@ class Arm:
     
     def sendToArduino(self) -> None:
         angle1 = 135-int(math.degrees(self.beam1.t)+calcAdjustment(self.beam1.absolute))
-        angle2 = 180-int(math.degrees(self.beam2.t)-45)
-        angle3 = int(math.degrees(self.beam1.t+self.beam2.t)-90)
+        angle2 = 180-int(math.degrees(self.beam2.t)-45-calcAdjustment(self.beam2.absolute))
+        angle3 = int(math.degrees(self.beam1.t+self.beam2.t)-90-calcAdjustment(self.beam3.absolute))
         self.arduino.write(bytes("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3) + "\n", 'utf-8'))
+        print("t4")
+        print("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3) + "\n")
 
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos
