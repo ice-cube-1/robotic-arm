@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
     <style>
-      #xpos, #ypos, #updateButton, #claw, #photoButton, #distanceButton, #currentDistance {
+      #xpos, #ypos, #updateButton, #claw, #photoButton, #distanceButton, #currentDistance, #step {
         position:absolute;
         left:20px;
       }
@@ -14,20 +14,23 @@
       #ypos {
         top: 50px;
       }
+      #step {
+        top: 80px
+      }
       #updateButton {
-        top: 80px;
+        top: 110px;
       }
       #claw {
-        top: 110px;
-      } 
-      #photoButton {
         top: 140px;
       } 
-      #distanceButton {
+      #photoButton {
         top: 170px;
+      } 
+      #distanceButton {
+        top: 200px;
       }
       #currentDistance {
-        top: 200px;
+        top: 230px;
       }
     </style>
     <script
@@ -44,6 +47,7 @@
     <img id="camera" src="" width="640" height="480">
     <input type="text" id="xpos" value="100">
     <input type="text" id="ypos" value="100">
+    <input type="text" id="step" value="100">
     <button id="updateButton" onclick="updateInfo()">Update</button>
     <input type="checkbox" id="claw" name="Open claw" onclick="moveClaw(this)" />
     <button id="photoButton" onclick="takePhoto()">Take Photo</button>
