@@ -5,6 +5,7 @@ from arm_info import Arm, Beam
 import math
 import json
 from camera import Camera
+from time import sleep
 
 async def echo(websocket):
     arm = Arm(Beam(59.5+4), Beam(67.6+4),Beam(70.6+4),Beam(25,math.radians(90)))
@@ -22,10 +23,21 @@ async def echo(websocket):
         elif message[0] == "distance":
             await websocket.send("distance: "+ str(camera.distance()))
         else:
-            positions = arm.setPosition(float(message[0]),float(message[1]),float(message[2]))
+            arm.setPosition(50.0,150.0)
+            arm.move_claw(45)
+            while True:
+                move = camera.getCentral()
+                if abs(move) <= 100: break
+                arm.setStepper(int(move/100))
+                sleep(2)
+            # positions = arm.setPosition(float(message[0]),float(message[1]))
+            positions = arm.setPosition(camera.distance(),0)
+            sleep(2)
+            arm.move_claw(0)
             print(positions)
             if positions != []:
                 await websocket.send(json.dumps(positions))
+
 
 async def handle_html(_):
         return web.FileResponse('./index.html')

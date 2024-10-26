@@ -30,9 +30,8 @@ class Arm:
         self.arduino = serial.Serial('/dev/ttyUSB0', baudrate=115200)
         self.stepperPos = 100
 
-    def setPosition(self, x: float, y: float, stepper: float) -> list[list[float]]:
+    def setPosition(self, x: float, y: float) -> list[list[float]]:
         try:
-            self.stepperPos = stepper
             y = y-self.beam0.length
             x = x-self.beam3.length
             dist: float = distance(x, y)
@@ -60,6 +59,10 @@ class Arm:
                   [self.beam2.endx+self.beam3.length, self.beam2.endy]]
         except:
             return []
+    def setStepper(self, pos: int) -> None:
+        self.stepperPos -=pos
+        print(self.stepperPos)
+        self.arduino.write(bytes("5"+str(self.stepperPos).zfill(3)+"\n",'utf-8'))
     
     def plotInfo(self) -> list[list[float]]:
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
@@ -68,9 +71,9 @@ class Arm:
         angle1 = 135-int(math.degrees(self.beam1.t)+calcAdjustment(self.beam1.absolute))
         angle2 = 180-int(math.degrees(self.beam2.t)-45-calcAdjustment(self.beam2.absolute))
         angle3 = int(math.degrees(self.beam1.t+self.beam2.t)-90-calcAdjustment(self.beam3.absolute))
-        self.arduino.write(bytes("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3) + "5"+ str(int(self.stepperPos)).zfill(3) + "\n", 'utf-8'))
+        self.arduino.write(bytes("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3) + "\n", 'utf-8'))
         print("t4")
-        print("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3) + "5"+ str(int(self.stepperPos)).zfill(3)+"\n")
+        print("1" + str(angle1).zfill(3) + "2" + str(angle2).zfill(3) + "3" + str(angle3).zfill(3)+"\n")
 
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos

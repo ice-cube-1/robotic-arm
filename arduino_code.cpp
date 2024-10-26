@@ -2,10 +2,10 @@
 const int servoCount = 4;
 const int pwmPins[4] = {3,5,6,9};
 Servo servo[servoCount];
-#define STEP_PIN 10
-#define DIR_PIN 11
+#define STEP_PIN 11
+#define DIR_PIN 10
 String data;
-int pos = 0;
+int pos = 100;
 
 void setup() 
 {
@@ -20,28 +20,27 @@ void  loop() {
   while (!Serial.available());
   data = Serial.readString();
   while (data.length() >= 3) {
+    Serial.println(data);
     if (data.substring(0,1).toInt() == 5) {
-      step(data.substring(1).toInt());
+      step(data.substring(1,4).toInt());
     } else {
-      servo[data.substring(0,1).toInt()-1].write(data.substring(1).toInt());    
+      servo[data.substring(0,1).toInt()-1].write(data.substring(1,4).toInt());    
     }
     data = data.substring(4);
   }
 }
 
 void step(int go) {
-  int stepCount = posMod(go - pos, 200);
-  if (stepCount > 100) {
+  if (pos-go > 0) {
     digitalWrite(DIR_PIN, HIGH);
-    stepCount = 200-stepCount;
-  } else {    
+  } else {
     digitalWrite(DIR_PIN, LOW);
   }
-  for (int i = 0; i < stepCount; i++) {
+  for (int i = 0; i < abs(pos-go); i++) {
     digitalWrite(STEP_PIN, HIGH);
-    delay(3);
+    delayMicroseconds(5000);
     digitalWrite(STEP_PIN, LOW);
-    delay(3);
+    delayMicroseconds(5000);
   }
   pos = go;
 }
