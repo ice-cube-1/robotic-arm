@@ -6,10 +6,12 @@ import math
 import json
 from camera import Camera
 from time import sleep
+from barrel import Barrel
 
 async def echo(websocket):
     arm = Arm(Beam(59.5+4), Beam(67.6+4),Beam(70.6+4),Beam(25,math.radians(90)))
     camera = Camera()
+    barrels: list[Barrel] = []
     async for message in websocket:
         print(message)
         message = message.split()
@@ -22,19 +24,22 @@ async def echo(websocket):
             await websocket.send("image")
         elif message[0] == "distance":
             await websocket.send("distance: "+ str(camera.distance()))
+        elif message[0] == "scan":
+            arm.setPosition(50,150)
+            arm.stepperPos = -25
+            while arm.stepperPos < 200:
+                arm.setStepper(arm.stepperPos+25)
+                if 90 < camera.distance() < 180:
+                    while True:
+                        move = camera.getCentral()
+                        if abs(move) <= 100: break
+                        arm.setStepper(int(move/100))
+                        sleep(2)
+                    barrels.append(Barrel(arm.stepperPos, camera.distance()))
+                    await websocket.send("barrel "+barrels[-1].getData())
+                
         else:
-            arm.setPosition(50.0,150.0)
-            arm.move_claw(45)
-            while True:
-                move = camera.getCentral()
-                if abs(move) <= 100: break
-                arm.setStepper(int(move/100))
-                sleep(2)
-            # positions = arm.setPosition(float(message[0]),float(message[1]))
-            positions = arm.setPosition(camera.distance(),0)
-            sleep(2)
-            arm.move_claw(0)
-            print(positions)
+            positions = arm.setPosition(float(message[0]),float(message[1]))
             if positions != []:
                 await websocket.send(json.dumps(positions))
 

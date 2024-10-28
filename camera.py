@@ -25,23 +25,24 @@ class Camera:
         upper_red2 = np.array([180, 255, 255])
         mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
         mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
-        red_object = cv2.bitwise_and(image, image, mask=mask1 | mask2)
-        contours, _ = cv2.findContours(mask1 | mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        red_object = cv2.bitwise_and(image, image, mask=mask1 | mask2) # type: ignore
+        contours, _ = cv2.findContours(mask1 | mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # type: ignore
         return sorted(contours, key=cv2.contourArea, reverse=True)
 
 
-    def distance(self) -> float | None:
+    def distance(self) -> float:
         contours = self.getContours()
         if contours:
             w = cv2.boundingRect(contours[0])[2]
             distance = 46600/w
             return distance-20
         else:
-            return None
+            return 0
     
-    def getCentral(self) -> int | None:
+    def getCentral(self) -> int:
         contours = self.getContours()
         if contours:
             rect = cv2.boundingRect(contours[0])
             difference = (3280/2)-(rect[0]+(rect[2]/2))
-            return difference
+            return int(difference)
+        return 20000
