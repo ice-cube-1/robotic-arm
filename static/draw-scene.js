@@ -1,4 +1,6 @@
-function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle) {
+import {loadTexture} from "./main.js"
+
+function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle, barrels) {
     var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     var ypos = zoom * Math.sin(cameraRotationY);
     var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
@@ -32,6 +34,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const vertexCount = 36
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
+    loadTexture(gl, [100,100,100,255]);
     for (let i = 0; i < 4; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
@@ -47,6 +50,15 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/2, [0,0,1])
         mat4.rotate(modelViewMatrix,modelViewMatrix, i*-angle, [1,0,0])
         mat4.scale(modelViewMatrix,modelViewMatrix, [5, 30, 5])
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        mat4.copy(modelViewMatrix, initialMatrix);
+    }
+    loadTexture(gl, [255,0,0,255]);
+    for (let i = 0; i<barrels.length; i++) {
+        const initialMatrix = mat4.clone(modelViewMatrix);
+        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i][0]*2, 25, barrels[i][1]*2])
+        mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);

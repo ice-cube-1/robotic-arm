@@ -105,10 +105,9 @@ function main() {
         },
       };            
     const buffers = initBuffers(gl);
-    const texture = loadTexture(gl, [100,100,100, 255]);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500, angle);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500, angle, barrels);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -135,7 +134,7 @@ function loadShader(gl, type, source) {
     return shader;
 }
 
-function loadTexture(gl, color) {
+export function loadTexture(gl, color) {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     const level = 0;
