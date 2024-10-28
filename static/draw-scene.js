@@ -1,6 +1,6 @@
 import {loadTexture} from "./main.js"
 
-function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle, barrels) {
+function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle, barrels, stepperpos) {
     var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     var ypos = zoom * Math.sin(cameraRotationY);
     var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
@@ -35,6 +35,8 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     loadTexture(gl, [100,100,100,255]);
+    const realinitialmatrix = mat4.clone(modelViewMatrix)
+    mat4.rotate(modelViewMatrix,modelViewMatrix,Math.PI*stepperpos/100,[0,-1,0])
     for (let i = 0; i < 4; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
@@ -54,6 +56,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
+    mat4.copy(modelViewMatrix,realinitialmatrix)
     loadTexture(gl, [255,0,0,255]);
     for (let i = 0; i<barrels.length; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
