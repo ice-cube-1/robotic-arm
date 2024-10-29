@@ -1,9 +1,6 @@
 import {loadTexture} from "./main.js"
 
 function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle, barrels, stepperpos) {
-    var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
-    var ypos = zoom * Math.sin(cameraRotationY);
-    var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
     gl.clearColor(0.8, 0.9, 1.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -17,6 +14,9 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     var modelViewMatrix = mat4.create();
+    var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
+    var ypos = zoom * Math.sin(cameraRotationY);
+    var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
     mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [positions[4][0], positions[4][1],0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
@@ -60,13 +60,56 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     loadTexture(gl, [255,0,0,255]);
     for (let i = 0; i<barrels.length; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i][0]*2, 25, barrels[i][1]*2])
+        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
         mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
 }
+
+function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, barrels) {
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const fieldOfView = (45 * Math.PI) / 180;
+    const canvas = gl.canvas;
+    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const zNear = 0.1;
+    const zFar = 1000.0;
+    const projectionMatrix = mat4.create();
+    mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+    let modelViewMatrix = mat4.create();
+    const xpos = -zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
+    const ypos = zoom * Math.sin(cameraRotationY);
+    const zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
+    mat4.lookAt(modelViewMatrix, [xpos, ypos, zpos], [positions[4][0], positions[4][1], 0], [0, 1, 0]);
+    gl.useProgram(programInfo.program);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
+    gl.disableVertexAttribArray(programInfo.attribLocations.vertexNormal);
+    gl.disableVertexAttribArray(programInfo.attribLocations.textureCoord);
+    setPositionAttribute(gl, buffers, programInfo);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+    const vertexCount = 36;
+    const type = gl.UNSIGNED_SHORT;
+    const offset = 0;
+    barrels.forEach((barrel, i) => {
+        loadTexture(gl, barrel.colorID);
+        const initialMatrix = mat4.clone(modelViewMatrix);
+        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
+        mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        mat4.copy(modelViewMatrix, initialMatrix);
+    });
+}
+
+function setup() {
+    
+}
+
 function setPositionAttribute(gl, buffers, programInfo) {
     const numComponents = 3;
     const type = gl.FLOAT;
@@ -107,4 +150,4 @@ function setNormalAttribute(gl, buffers, programInfo) {
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
 
-export { drawScene };
+export { drawScene, drawSceneForPicking };

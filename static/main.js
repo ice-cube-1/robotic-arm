@@ -1,5 +1,5 @@
 import { initBuffers } from "./cube-buffer.js";
-import { drawScene } from "./draw-scene.js";
+import { drawScene, drawSceneForPicking } from "./draw-scene.js";
 
 var mousedown = false;
 var mousePos = {x:0,y:0}
@@ -7,7 +7,10 @@ var prevmouse = {x:0,y:0}
 var positions = [[0, 29.75, 0.0, 59.5+4], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6+4], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6+4], [87.5, 100.0, 1.5707963267948966, 25],[0,0]]
 var angle = 0;
 var stepperpos = 100
-var barrels = []
+var barrels = [
+    { position: [-120, -50], colorID: [255, 0, 0, 255] },
+    { position: [-120, 50], colorID: [255, 20, 0, 255] }
+];
 var websocket = new WebSocket("ws://192.168.137.81:8765")
 
 function updateInfo() {
@@ -116,6 +119,30 @@ function main() {
     requestAnimationFrame(render);
     canvas.addEventListener('mousemove', function(e) {
         getMousePosition(e, canvas);
+    });
+    addEventListener("click", function(e, target) {
+        target = target || e.target
+        const rect = target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500, barrels);
+        var pixels = new Uint8Array(4);
+        gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+        const scale = 255/Math.max(...pixels.subarray(0,3))
+        for (let i = 0; i<pixels.length; i++) {
+            pixels[i]=pixels[i]*scale
+        }
+        console.log(pixels)
+        for (let i = 0; i < barrels.length; i++) {
+            const barrel = barrels[i];
+            if (pixels[0] - Math.abs(barrel.colorID[0]) < 2 && pixels[1] - Math.abs(barrel.colorID[1]) < 2 && pixels[2] - Math.abs(barrel.colorID[2]) < 2) {
+                console.log("Barrel clicked:", i);
+                break;
+            }
+        }
+    
+        // Render the scene normally after picking
+        requestAnimationFrame(render);
     });
 }
 
