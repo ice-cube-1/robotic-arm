@@ -4,13 +4,10 @@ import { drawScene, drawSceneForPicking } from "./draw-scene.js";
 var mousedown = false;
 var mousePos = {x:0,y:0}
 var prevmouse = {x:0,y:0}
-var positions = [[0, 29.75, 0.0, 59.5+4], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6+4], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6+4], [87.5, 100.0, 1.5707963267948966, 25],[0,0]]
+var positions = [[0, 29.75, 0.0, 59.5+4], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6+4], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6+4], [87.5, 100.0, 1.5707963267948966, 25],[100,100]]
 var angle = 0;
 var stepperpos = 100
-var barrels = [
-    { position: [-120, -50], colorID: [255, 0, 0, 255] },
-    { position: [-120, 50], colorID: [255, 20, 0, 255] }
-];
+var barrels = [{position: [100,100], colorID:[255,0,0,0], attached:"yes"}];
 var websocket = new WebSocket("ws://192.168.137.81:8765")
 
 function updateInfo() {
@@ -24,14 +21,14 @@ function takePhoto() {
     websocket.send("photo")
 }
 
-function distance() {
-    websocket.send("distance")
+function scan() {
+    websocket.send("scan")
 }
 
 function moveClaw(checkbox) {
     if (checkbox.checked) {
-        websocket.send("claw 45")
         angle = Math.PI/4
+        websocket.send("claw 45")
     } else {
         websocket.send("claw 0")
         angle = 0
@@ -42,13 +39,26 @@ websocket.onmessage = (event) => {
     if (event.data == "image") {
         const img = document.getElementById('camera');
         img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
-    } else if (event.data.startsWith("distance: ")) {
-        document.getElementById("currentDistance").textContent = event.data.substring(10);
     } else if (event.data.startsWith("barrel ")) {
         info = event.data.split(" ")
-        barrels.push([parseFloat(info[1]),parseFloat(info[2])])
+        barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no"})
     } else if (event.data.startsWith("stepperpos")) {
         stepperpos=parseFloat(event.data.split(" ")[1])
+    } else if (event.data.startsWith("claw ")) {
+        angle=parseFloat(event.data.split(" ")[1])
+    } else if (event.data == "attached") {
+        for (var i = 0; i<barrels.length; i++) {
+            if (barrels[i].attached == "next") {
+                barrels[i].attached = "yes"
+            }
+        }
+    } else if (event.data.startsWith("dropped")) {
+        for (var i = 0; i<barrels.length; i++) {
+            if (barrels[i].attached == "yes") {
+                barrels[i].attached = "no"
+                barrels[i].position = event.data.split(" ").slice(1)
+            }
+        }
     } else {
         var obj  = JSON.parse(event.data);
         positions = obj
@@ -58,7 +68,7 @@ websocket.onmessage = (event) => {
 window.updateInfo = updateInfo;
 window.moveClaw = moveClaw;
 window.takePhoto = takePhoto;
-window.distance = distance;
+window.scan = scan;
 
 main();
 function main() {
@@ -113,7 +123,7 @@ function main() {
     const buffers = initBuffers(gl);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500, angle, barrels, stepperpos);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 800, angle, barrels, stepperpos);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -125,7 +135,7 @@ function main() {
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 500, barrels);
+        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 800, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
         const scale = 255/Math.max(...pixels.subarray(0,3))
@@ -133,15 +143,10 @@ function main() {
             pixels[i]=pixels[i]*scale
         }
         console.log(pixels)
-        for (let i = 0; i < barrels.length; i++) {
-            const barrel = barrels[i];
-            if (pixels[0] - Math.abs(barrel.colorID[0]) < 2 && pixels[1] - Math.abs(barrel.colorID[1]) < 2 && pixels[2] - Math.abs(barrel.colorID[2]) < 2) {
-                console.log("Barrel clicked:", i);
-                break;
-            }
+        if (pixels[0] == 255 && pixels[2] == 0) {
+            websocket.send("barrel "+barrels[Math.round(pixels[1]/10)].position[0]+" "+barrels[Math.round(pixels[1]/10)].position[0])
+            console.log("barrel")
         }
-    
-        // Render the scene normally after picking
         requestAnimationFrame(render);
     });
 }

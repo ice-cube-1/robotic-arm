@@ -16,32 +16,56 @@ async def echo(websocket):
         print(message)
         message = message.split()
         if message[0] == "claw":
-            print(message[1])
+            if message[1] == "45":
+                for i in range(len(barrels)):
+                    if barrels[i].gripped==True:
+                        barrels[i] = Barrel(arm.stepperPos, arm.beam3.endy)
+                        barrels[i].gripped = False
+                        await websocket.send("dropped "+barrels[i].getData())
             arm.move_claw(float(message[1]))
         elif message[0] == "photo":
             print("photo requested")
             camera.takePhoto()
             await websocket.send("image")
-        elif message[0] == "distance":
-            await websocket.send("distance: "+ str(camera.distance()))
         elif message[0] == "scan":
-            arm.setPosition(50,150)
+            await websocket.send(json.dumps(arm.setPosition(50,150)))
             arm.stepperPos = -25
             while arm.stepperPos < 200:
                 arm.setStepper(arm.stepperPos+25)
                 if 90 < camera.distance() < 180:
                     while True:
                         move = camera.getCentral()
+                        await websocket.send("image")
                         if abs(move) <= 100: break
                         arm.setStepper(int(move/100))
+                        await websocket.send("stepperpos "+str(arm.stepperPos))
                         sleep(2)
                     barrels.append(Barrel(arm.stepperPos, camera.distance()))
                     await websocket.send("barrel "+barrels[-1].getData())
-                
+        elif message[0] == "barrel":
+            barrel = barrels[0]
+            for i in range(len(barrels)): 
+                if barrels[i].x == message[1] and barrels[i].y == message[2]:
+                    await websocket.send(json.dumps(arm.setPosition(50,150)))
+                    sleep(2)
+                    arm.move_claw(45)
+                    await websocket.send("claw 45")
+                    sleep(2)
+                    arm.setStepper(barrels[i].angle)
+                    await websocket.send("stepperpos "+str(arm.stepperPos))
+                    sleep(2)
+                    await websocket.send(json.dumps(arm.setPosition(barrels[i].distance, 0)))
+                    sleep(2)
+                    arm.move_claw(0)
+                    await websocket.send("claw 0")
+                    barrels[i].gripped = True
+                    await websocket.send("attached")
+                    await websocket.send(json.dumps(arm.setPosition(50,150)))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             if positions != []:
                 await websocket.send(json.dumps(positions))
+            await websocket.send("stepperpos "+json.dumps(message[2]))
 
 
 async def handle_html(_):

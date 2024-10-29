@@ -17,7 +17,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     var ypos = zoom * Math.sin(cameraRotationY);
     var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
-    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [positions[4][0], positions[4][1],0], [0,1,0]);
+    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [-positions[4][0], positions[4][1],0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
@@ -56,15 +56,27 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
-    mat4.copy(modelViewMatrix,realinitialmatrix)
     loadTexture(gl, [255,0,0,255]);
     for (let i = 0; i<barrels.length; i++) {
-        const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
-        mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
-        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
-        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
-        mat4.copy(modelViewMatrix, initialMatrix);
+        if (barrels[i].attached == "yes") {
+            const initialMatrix = mat4.clone(modelViewMatrix);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+30, positions[4][1]*2-5, 0])
+            mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+            gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+            gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+            mat4.copy(modelViewMatrix, initialMatrix);
+        }
+    }
+    mat4.copy(modelViewMatrix,realinitialmatrix)
+    for (let i = 0; i<barrels.length; i++) {
+        if (barrels[i].attached != "yes") {
+            const initialMatrix = mat4.clone(modelViewMatrix);
+            mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
+            mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+            gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+            gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+            mat4.copy(modelViewMatrix, initialMatrix);
+        }
     }
 }
 
@@ -85,7 +97,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const xpos = -zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     const ypos = zoom * Math.sin(cameraRotationY);
     const zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
-    mat4.lookAt(modelViewMatrix, [xpos, ypos, zpos], [positions[4][0], positions[4][1], 0], [0, 1, 0]);
+    mat4.lookAt(modelViewMatrix, [xpos, ypos, zpos], [-positions[4][0], positions[4][1], 0], [0, 1, 0]);
     gl.useProgram(programInfo.program);
     gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
     gl.disableVertexAttribArray(programInfo.attribLocations.vertexNormal);
@@ -96,6 +108,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     barrels.forEach((barrel, i) => {
+        if (barrel.attached)
         loadTexture(gl, barrel.colorID);
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
