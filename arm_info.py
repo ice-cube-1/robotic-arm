@@ -60,7 +60,7 @@ class Arm:
         except:
             return []
     def setStepper(self, pos: int) -> None:
-        self.stepperPos -=pos
+        self.stepperPos =pos
         print(self.stepperPos)
         self.arduino.write(bytes("5"+str(self.stepperPos).zfill(3)+"\n",'utf-8'))
     

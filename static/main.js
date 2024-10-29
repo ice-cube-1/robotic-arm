@@ -7,7 +7,7 @@ var prevmouse = {x:0,y:0}
 var positions = [[0, 29.75, 0.0, 59.5+4], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6+4], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6+4], [87.5, 100.0, 1.5707963267948966, 25],[100,100]]
 var angle = 0;
 var stepperpos = 100
-var barrels = [{position: [100,100], colorID:[255,0,0,0], attached:"yes"}];
+var barrels = [];
 var websocket = new WebSocket("ws://192.168.137.81:8765")
 
 function updateInfo() {
@@ -146,8 +146,7 @@ function main() {
         if (pixels[0] == 255 && pixels[2] == 0) {
             websocket.send("barrel "+barrels[Math.round(pixels[1]/10)].position[0]+" "+barrels[Math.round(pixels[1]/10)].position[0])
             console.log("barrel")
-        }
-        requestAnimationFrame(render);
+        }        
     });
 }
 
