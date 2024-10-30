@@ -73,6 +73,8 @@ async def echo(websocket):
                     await websocket.send(json.dumps(arm.setPosition(50,150)))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
+            sleep(2)
+            arm.setStepper(message[2])
             if positions != []:
                 await websocket.send(json.dumps(positions))
             await websocket.send("stepperpos "+json.dumps(message[2]))
