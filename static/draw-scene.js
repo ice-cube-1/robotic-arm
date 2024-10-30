@@ -35,8 +35,14 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     const realinitialmatrix = mat4.clone(modelViewMatrix);
+    var initialMatrix = mat4.clone(modelViewMatrix);
+    loadTexture(gl,[200,200,200,255])
+    mat4.translate(modelViewMatrix,modelViewMatrix,[0,-50,0])
+    mat4.scale(modelViewMatrix,modelViewMatrix, [10000,5,10000])
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    mat4.copy(modelViewMatrix, initialMatrix);
     loadTexture(gl, [50,50,50,255]);
-    const initialMatrix = mat4.clone(modelViewMatrix);
     mat4.translate(modelViewMatrix,modelViewMatrix, [0,-15,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [50,30,50])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
@@ -61,7 +67,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
-    loadTexture(gl,[200,200,200,255])
+    loadTexture(gl,[250,250,250,255])
     for (let i = -1; i<=1; i+=2) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(15*Math.cos(angle)), positions[4][1]*2-20, i*(15*Math.sin(angle))])
@@ -80,13 +86,14 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         mat4.copy(modelViewMatrix, initialMatrix);
     }
     loadTexture(gl, [0,200,50,255]);
+    initialMatrix = mat4.clone(modelViewMatrix);
     mat4.translate(modelViewMatrix,modelViewMatrix,[25,50,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [2,25,25])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
     loadTexture(gl, [50,50,50,255]);
-    mat4.translate(modelViewMatrix,modelViewMatrix,[-28,50,0])
+    mat4.translate(modelViewMatrix,modelViewMatrix,[28,50,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [2,15,10])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
@@ -95,8 +102,8 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     for (let i = 0; i<barrels.length; i++) {
         if (barrels[i].attached == "yes") {
             const initialMatrix = mat4.clone(modelViewMatrix);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+30, positions[4][1]*2-5, 0])
-            mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+            mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+40, positions[4][1]*2-15, 0])
+            mat4.scale(modelViewMatrix,modelViewMatrix,[15,30,15])
             gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
             gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
             mat4.copy(modelViewMatrix, initialMatrix);
@@ -106,8 +113,8 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     for (let i = 0; i<barrels.length; i++) {
         if (barrels[i].attached != "yes") {
             const initialMatrix = mat4.clone(modelViewMatrix);
-            mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
-            mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+            mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, -15, barrels[i].position[1]*2])
+            mat4.scale(modelViewMatrix,modelViewMatrix,[15,30,15])
             gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
             gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
             mat4.copy(modelViewMatrix, initialMatrix);
@@ -115,7 +122,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     }
 }
 
-function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, barrels) {
+function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRotationY, zoom, barrels) {
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -132,7 +139,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const xpos = -zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     const ypos = zoom * Math.sin(cameraRotationY);
     const zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
-    mat4.lookAt(modelViewMatrix, [xpos, ypos, zpos], [-positions[4][0], positions[4][1], 0], [0, 1, 0]);
+    mat4.lookAt(modelViewMatrix, [xpos, ypos, zpos], [0,0,0], [0, 1, 0]);
     gl.useProgram(programInfo.program);
     gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
     gl.disableVertexAttribArray(programInfo.attribLocations.vertexNormal);
@@ -146,16 +153,12 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
         if (barrel.attached)
         loadTexture(gl, barrel.colorID);
         const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2, 25, barrels[i].position[1]*2])
-        mat4.scale(modelViewMatrix,modelViewMatrix,[15,50,15])
+        mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2,-15, barrels[i].position[1]*2])
+        mat4.scale(modelViewMatrix,modelViewMatrix,[15,30,15])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     });
-}
-
-function setup() {
-    
 }
 
 function setPositionAttribute(gl, buffers, programInfo) {
