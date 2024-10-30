@@ -1,4 +1,5 @@
 .vscode/
 env/
 __pycache__/
-static/image.jpg
+static/
+node_modules/

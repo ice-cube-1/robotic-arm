@@ -1,6 +1,7 @@
-import {loadTexture} from "./main.js"
+import {ProgramInfo, Barrel} from "./main.js";
+import {Buffers} from "./cube-buffer.js"
 
-function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, positions, zoom, angle, barrels, stepperpos) {
+function drawScene(gl: WebGLRenderingContext, programInfo: ProgramInfo, buffers: Buffers, cameraRotationX: number, cameraRotationY: number, positions: number[][], zoom: number, angle: number, barrels: Barrel[], stepperpos: number) {
     var xpos =-zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     var ypos = zoom * Math.sin(cameraRotationY);
     var zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
@@ -10,7 +11,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     const fieldOfView = (45 * Math.PI) / 180;
-    const canvas = gl.canvas;
+    const canvas = gl.canvas as HTMLCanvasElement;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 5000.0;
@@ -36,13 +37,13 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const offset = 0;
     const realinitialmatrix = mat4.clone(modelViewMatrix);
     var initialMatrix = mat4.clone(modelViewMatrix);
-    loadTexture(gl,[200,200,200,255])
+    loadTexture(gl, new Uint8Array([200,200,200,255]))
     mat4.translate(modelViewMatrix,modelViewMatrix,[0,-50,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [10000,5,10000])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
-    loadTexture(gl, [50,50,50,255]);
+    loadTexture(gl, new Uint8Array([50,50,50,255]));
     mat4.translate(modelViewMatrix,modelViewMatrix, [0,-15,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [50,30,50])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
@@ -61,13 +62,13 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
         mat4.rotate(modelViewMatrix, modelViewMatrix, positions[i][2], [0,0,1])
-        loadTexture(gl, [50,50,50,255]);
+        loadTexture(gl, new Uint8Array([50,50,50,255]));
         mat4.scale(modelViewMatrix,modelViewMatrix, [20, positions[i][3], 20])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
-    loadTexture(gl,[250,250,250,255])
+    loadTexture(gl, new Uint8Array([250,250,250,255]))
     for (let i = -1; i<=1; i+=2) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(15*Math.cos(angle)), positions[4][1]*2-20, i*(15*Math.sin(angle))])
@@ -85,20 +86,20 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
-    loadTexture(gl, [0,200,50,255]);
+    loadTexture(gl, new Uint8Array([0,200,50,255]));
     initialMatrix = mat4.clone(modelViewMatrix);
     mat4.translate(modelViewMatrix,modelViewMatrix,[25,50,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [2,25,25])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
-    loadTexture(gl, [50,50,50,255]);
+    loadTexture(gl, new Uint8Array([50,50,50,255]));
     mat4.translate(modelViewMatrix,modelViewMatrix,[28,50,0])
     mat4.scale(modelViewMatrix,modelViewMatrix, [2,15,10])
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);    
-    loadTexture(gl, [255,0,0,255]);
+    loadTexture(gl, new Uint8Array([255,0,0,255]));
     for (let i = 0; i<barrels.length; i++) {
         if (barrels[i].attached == "yes") {
             const initialMatrix = mat4.clone(modelViewMatrix);
@@ -122,15 +123,14 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     }
 }
 
-function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRotationY, zoom, barrels) {
+function drawSceneForPicking(gl: WebGLRenderingContext, programInfo: ProgramInfo, buffers: Buffers, cameraRotationX: number, cameraRotationY: number, zoom: number, barrels: Barrel[]) {
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     const fieldOfView = (45 * Math.PI) / 180;
-    const canvas = gl.canvas;
-    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const aspect = 640/480
     const zNear = 0.1;
     const zFar = 1000.0;
     const projectionMatrix = mat4.create();
@@ -151,7 +151,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const offset = 0;
     barrels.forEach((barrel, i) => {
         if (barrel.attached)
-        loadTexture(gl, barrel.colorID);
+        loadTexture(gl, new Uint8Array(barrel.colorID));
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix,modelViewMatrix,[barrels[i].position[0]*2,-15, barrels[i].position[1]*2])
         mat4.scale(modelViewMatrix,modelViewMatrix,[15,30,15])
@@ -161,7 +161,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     });
 }
 
-function setPositionAttribute(gl, buffers, programInfo) {
+function setPositionAttribute(gl: WebGLRenderingContext, buffers: Buffers, programInfo: ProgramInfo) {
     const numComponents = 3;
     const type = gl.FLOAT;
     const normalize = false;
@@ -179,7 +179,7 @@ function setPositionAttribute(gl, buffers, programInfo) {
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 }
 
-function setTextureAttribute(gl, buffers, programInfo) {
+function setTextureAttribute(gl: WebGLRenderingContext, buffers: Buffers, programInfo: ProgramInfo) {
     const num = 2;
     const type = gl.FLOAT;
     const normalize = false;
@@ -190,7 +190,7 @@ function setTextureAttribute(gl, buffers, programInfo) {
     gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord)
 }
 
-function setNormalAttribute(gl, buffers, programInfo) {
+function setNormalAttribute(gl: WebGLRenderingContext, buffers: Buffers, programInfo: ProgramInfo) {
     const numComponents = 3;
     const type = gl.FLOAT;
     const normalize = false;
@@ -200,5 +200,21 @@ function setNormalAttribute(gl, buffers, programInfo) {
     gl.vertexAttribPointer(programInfo.attribLocations.vertexNormal, numComponents, type, normalize, stride, offset,);
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
+
+function loadTexture(gl: WebGLRenderingContext, color: ArrayBuffer) {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const pixel = new Uint8Array(color);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
+    return texture;
+}
+
 
 export { drawScene, drawSceneForPicking };

@@ -1,4 +1,4 @@
-import { initBuffers } from "./cube-buffer.js";
+import { Buffers, initBuffers } from "./cube-buffer.js";
 import { drawScene, drawSceneForPicking } from "./draw-scene.js";
 
 var mousedown = false;
@@ -6,15 +6,21 @@ var mousePos = {x:0,y:0}
 var prevmouse = {x:0,y:0}
 var positions = [[0, 29.75, 0.0, 59.5+4], [6.283683576271408, 92.71077115505295, 2.9545969675064323, 67.6+4], [43.78368357627141, 112.96077115505295, 1.1772622130201693, 67.6+4], [87.5, 100.0, 1.5707963267948966, 25],[100,100]]
 var angle = Math.PI/4;
-var stepperpos = 30
-var barrels = [];
+var stepperpos = 100
+var barrels: Barrel[] = [];
 var websocket = new WebSocket("ws://192.168.137.81:8765")
 
 function updateInfo() {
-    var x = document.getElementById("xpos").value;
-    var y = document.getElementById("ypos").value;
-    var step = document.getElementById("step").value;
-    websocket.send(x+" "+y+" "+step)
+    const x: string = (document.getElementById("xpos") as HTMLInputElement).value;
+    const y: string = (document.getElementById("ypos") as HTMLInputElement).value;
+    const step: string = (document.getElementById("step") as HTMLInputElement).value;
+    websocket.send(`${x} ${y} ${step}`);
+}
+
+export type Barrel = {
+    position: number[],
+    colorID: number[],
+    attached: string
 }
 
 function takePhoto() {
@@ -25,20 +31,20 @@ function scan() {
     websocket.send("scan")
 }
 
-function moveClaw(checkbox) {
+function moveClaw(checkbox: HTMLInputElement) {
     if (checkbox.checked) {
         angle = Math.PI/2
         websocket.send("claw 45")
     } else {
         websocket.send("claw 0")
         angle = Math.PI/4
-        }
+    }
 }
 
 websocket.onmessage = (event) => {
     if (event.data == "image") {
-        const img = document.getElementById('camera');
-        img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
+        const img = document.getElementById('camera') as HTMLImageElement;
+        img.src = `static/image.jpg?${Math.ceil(Math.random() * 1000)}`;        
     } else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ")
         barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no"})
@@ -66,15 +72,31 @@ websocket.onmessage = (event) => {
     }
 };
 
-window.updateInfo = updateInfo;
-window.moveClaw = moveClaw;
-window.takePhoto = takePhoto;
-window.scan = scan;
+(window as any).updateInfo = updateInfo;
+(window as any).moveClaw = moveClaw;
+(window as any).takePhoto = takePhoto;
+(window as any).scan = scan;
 
 main();
+
+export type ProgramInfo = {
+    program: WebGLProgram;
+    attribLocations: {
+        vertexPosition: number;
+        vertexNormal: number;
+        textureCoord: number;
+    };
+    uniformLocations: {
+        projectionMatrix: WebGLUniformLocation;
+        modelViewMatrix: WebGLUniformLocation;
+        normalMatrix: WebGLUniformLocation;
+        uSampler: WebGLUniformLocation;
+    };
+}
+
 function main() {
     const canvas = document.querySelector("#glcanvas")
-    const gl = canvas.getContext("webgl");
+    const gl = (canvas as HTMLCanvasElement).getContext("webgl") as WebGLRenderingContext;
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     const vsSource = `
@@ -107,7 +129,7 @@ function main() {
         }
     `;
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-    const programInfo = {
+    const programInfo: ProgramInfo = {
         program: shaderProgram,
         attribLocations: {
           vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
@@ -115,24 +137,24 @@ function main() {
           textureCoord: gl.getAttribLocation(shaderProgram, "aTextureCoord"),
         },
         uniformLocations: {
-          projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
-          modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
-          normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
-          uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
+          projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix") as WebGLUniformLocation,
+          modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix") as WebGLUniformLocation,
+          normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix") as WebGLUniformLocation,
+          uSampler: gl.getUniformLocation(shaderProgram, "uSampler") as WebGLUniformLocation,
         },
       };            
-    const buffers = initBuffers(gl);
+    const buffers = initBuffers(gl) as Buffers;
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
         drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1000, angle, barrels, stepperpos);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
-    canvas.addEventListener('mousemove', function(e) {
-        getMousePosition(e, canvas);
+    (canvas as HTMLCanvasElement).addEventListener('mousemove', function(e) {
+        getMousePosition(e);
     });
-    addEventListener("click", function(e, target) {
-        target = target || e.target
+    addEventListener("click", function(e: MouseEvent) {
+        const target = e.currentTarget as HTMLButtonElement
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -152,41 +174,26 @@ function main() {
 }
 
 
-function initShaderProgram(gl, vsSource, fsSource) {
-    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-    const shaderProgram = gl.createProgram();
+function initShaderProgram(gl: WebGLRenderingContext, vsSource: string, fsSource: string) {
+    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource) as WebGLShader;
+    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource) as WebGLShader;
+    const shaderProgram = gl.createProgram() as WebGLProgram;
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
     gl.linkProgram(shaderProgram);
     return shaderProgram;
 }
 
-function loadShader(gl, type, source) {
-    const shader = gl.createShader(type);
+function loadShader(gl: WebGLRenderingContext, type: GLenum, source: string) {
+    const shader = gl.createShader(type) as WebGLShader;
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     return shader;
 }
 
-export function loadTexture(gl, color) {
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    const level = 0;
-    const internalFormat = gl.RGBA;
-    const width = 1;
-    const height = 1;
-    const border = 0;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
-    const pixel = new Uint8Array(color);
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
-    return texture;
-}
-
 addEventListener("mousedown", (event) => {
     mousedown = true;
-    const rect = event.target.getBoundingClientRect();
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
     prevmouse.x = ((event.clientX - rect.left) / rect.width * 2 - 1) * 4;
     prevmouse.y = ((event.clientY - rect.top) / rect.height * 2 - 1) * 2;
 });
@@ -195,8 +202,8 @@ addEventListener("mouseup", (_) => {
     mousedown = false;
 });
 
- function getMousePosition(event, target) {
-    target = target || event.target;
+ function getMousePosition(event: MouseEvent) {
+    const target = event.currentTarget as HTMLButtonElement
     if (mousedown) {
         const rect = target.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width * 2 - 1)*4;

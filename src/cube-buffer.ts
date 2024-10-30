@@ -1,5 +1,11 @@
+export type Buffers = {
+  position: WebGLBuffer;
+  normal: WebGLBuffer;
+  textureCoord: WebGLBuffer;
+  indices: WebGLBuffer;
+}
 
-function initBuffers(gl) {
+function initBuffers(gl: WebGLRenderingContext) {
     const positionBuffer = initPositionBuffer(gl);
     const textureCoordBuffer = initTextureBuffer(gl);
     const indexBuffer = initIndexBuffer(gl);
@@ -7,7 +13,7 @@ function initBuffers(gl) {
     return { position: positionBuffer, normal: normalBuffer, textureCoord: textureCoordBuffer, indices: indexBuffer };
 }
 
-function initPositionBuffer(gl) {
+function initPositionBuffer(gl: WebGLRenderingContext) {
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     const positions = [
@@ -22,7 +28,7 @@ function initPositionBuffer(gl) {
     return positionBuffer;
 }
 
-function initTextureBuffer(gl) {
+function initTextureBuffer(gl: WebGLRenderingContext) {
     const textureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
     const textureCoordinates = [
@@ -43,7 +49,7 @@ function initTextureBuffer(gl) {
     return textureCoordBuffer;
   }  
 
-function initIndexBuffer(gl) {
+function initIndexBuffer(gl: WebGLRenderingContext) {
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     const indices = [
@@ -58,7 +64,7 @@ function initIndexBuffer(gl) {
     return indexBuffer;
 }
 
-function initNormalBuffer(gl) {
+function initNormalBuffer(gl: WebGLRenderingContext) {
     const normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     const vertexNormals = [
