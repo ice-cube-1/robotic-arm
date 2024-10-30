@@ -40,10 +40,11 @@ websocket.onmessage = (event) => {
         const img = document.getElementById('camera');
         img.src = `static/image.jpg?${Math.ceil(Math.random()*1000)}`;
     } else if (event.data.startsWith("barrel ")) {
-        info = event.data.split(" ")
+        var info = event.data.split(" ")
         barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no"})
     } else if (event.data.startsWith("stepperpos")) {
-        stepperpos=parseFloat(event.data.split(" ")[1])
+        stepperpos=parseInt(event.data.split(" ")[1])
+        console.log(stepperpos)
     } else if (event.data.startsWith("claw ")) {
         angle=parseFloat(event.data.split(" ")[1])
     } else if (event.data == "attached") {

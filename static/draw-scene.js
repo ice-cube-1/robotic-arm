@@ -17,7 +17,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     var modelViewMatrix = mat4.create();
-    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [-positions[4][0], positions[4][1],0], [0,1,0]);
+    mat4.lookAt(modelViewMatrix, [xpos,ypos,zpos], [0,0,0], [0,1,0]);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
@@ -36,6 +36,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const offset = 0;
     const realinitialmatrix = mat4.clone(modelViewMatrix);
     loadTexture(gl, [100,100,100,255]);
+    mat4.rotate(modelViewMatrix,modelViewMatrix,Math.PI*stepperpos/100,[0,-1,0])
     for (let i = 0; i < 4; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);

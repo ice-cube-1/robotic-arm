@@ -7,7 +7,6 @@ class Camera:
     def __init__(self) -> None:
         self.camera = Picamera2()
         self.camera.configure(self.camera.create_still_configuration())
-        self.camera.set_controls({"Contrast": 1.0})
         self.camera.start()
 
     def takePhoto(self) -> None: 
@@ -19,9 +18,9 @@ class Camera:
     def getContours(self):
         image = self.camera.capture_array()
         hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        lower_red1 = np.array([0, 100, 60])
+        lower_red1 = np.array([0, 150, 80])
         upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([170, 100, 60])
+        lower_red2 = np.array([170, 150, 80])
         upper_red2 = np.array([180, 255, 255])
         mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
         mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)

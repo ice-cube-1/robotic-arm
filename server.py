@@ -29,17 +29,13 @@ async def echo(websocket):
             await websocket.send("image")
         elif message[0] == "scan":
             await websocket.send(json.dumps(arm.setPosition(50,150)))
-            arm.stepperPos = -25
+            arm.stepperPos = -10
             while arm.stepperPos < 100:
-                arm.setStepper(arm.stepperPos+25)
+                arm.setStepper(arm.stepperPos+10)
                 distance=camera.distance()
                 print(distance)
-                camera.takePhoto()
-                await websocket.send("image")
-                while 90 < distance < 180:
+                while 90 < distance < 200:
                     move = camera.getCentral()
-                    camera.takePhoto()
-                    await websocket.send("image")
                     if abs(move) <= 100:
                         barrels.append(Barrel(arm.stepperPos, camera.distance()))
                         [print(i.x,i.y, i.distance,i.angle) for i in barrels]
@@ -51,6 +47,8 @@ async def echo(websocket):
                     await websocket.send("stepperpos "+str(arm.stepperPos))
                     sleep(2)
                     distance = camera.distance()
+                    print(distance)
+                await websocket.send("stepperpos "+str(arm.stepperPos))
                 sleep(2)
         elif message[0] == "barrel":
             barrel = barrels[0]
@@ -77,7 +75,7 @@ async def echo(websocket):
             arm.setStepper(message[2])
             if positions != []:
                 await websocket.send(json.dumps(positions))
-            await websocket.send("stepperpos "+json.dumps(message[2]))
+            await websocket.send("stepperpos "+str(arm.stepperPos))
 
 
 async def handle_html(_):
