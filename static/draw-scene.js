@@ -13,7 +13,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const canvas = gl.canvas;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 1000.0;
+    const zFar = 5000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     var modelViewMatrix = mat4.create();
@@ -35,27 +35,62 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     const realinitialmatrix = mat4.clone(modelViewMatrix);
-    loadTexture(gl, [100,100,100,255]);
+    loadTexture(gl, [50,50,50,255]);
+    const initialMatrix = mat4.clone(modelViewMatrix);
+    mat4.translate(modelViewMatrix,modelViewMatrix, [0,-15,0])
+    mat4.scale(modelViewMatrix,modelViewMatrix, [50,30,50])
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    for (var i = -1; i<2; i+=2) {
+        mat4.copy(modelViewMatrix, initialMatrix);
+        mat4.translate(modelViewMatrix,modelViewMatrix, [0,-40,0])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/4, [0,i,0])
+        mat4.scale(modelViewMatrix,modelViewMatrix, [350,5,15])
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        mat4.copy(modelViewMatrix, initialMatrix);
+    }
     mat4.rotate(modelViewMatrix,modelViewMatrix,Math.PI*stepperpos/100,[0,-1,0])
     for (let i = 0; i < 4; i++) {
         const initialMatrix = mat4.clone(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [positions[i][0]*2,positions[i][1]*2,0]);
         mat4.rotate(modelViewMatrix, modelViewMatrix, positions[i][2], [0,0,1])
-        mat4.scale(modelViewMatrix,modelViewMatrix, [15, positions[i][3], 15])
+        loadTexture(gl, [50,50,50,255]);
+        mat4.scale(modelViewMatrix,modelViewMatrix, [20, positions[i][3], 20])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
+    loadTexture(gl,[200,200,200,255])
     for (let i = -1; i<=1; i+=2) {
         const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(30*Math.cos(angle)), positions[4][1]*2-5, i*(30*Math.sin(angle))])
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(15*Math.cos(angle)), positions[4][1]*2-20, i*(15*Math.sin(angle))])
         mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/2, [0,0,1])
         mat4.rotate(modelViewMatrix,modelViewMatrix, i*-angle, [1,0,0])
-        mat4.scale(modelViewMatrix,modelViewMatrix, [5, 30, 5])
+        mat4.scale(modelViewMatrix,modelViewMatrix, [5, 15, 5])
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        mat4.copy(modelViewMatrix, initialMatrix);
+        mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0]*2+(30*Math.cos(angle)+15*Math.cos(angle-Math.PI/4)), positions[4][1]*2-20, i*(30*Math.sin(angle)-15*Math.cos(angle+Math.PI/4))])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, Math.PI/2, [0,0,1])
+        mat4.rotate(modelViewMatrix,modelViewMatrix, i*-(angle-Math.PI/4), [1,0,0])
+        mat4.scale(modelViewMatrix,modelViewMatrix, [5, 15, 5])
         gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         mat4.copy(modelViewMatrix, initialMatrix);
     }
+    loadTexture(gl, [0,200,50,255]);
+    mat4.translate(modelViewMatrix,modelViewMatrix,[25,50,0])
+    mat4.scale(modelViewMatrix,modelViewMatrix, [2,25,25])
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    mat4.copy(modelViewMatrix, initialMatrix);
+    loadTexture(gl, [50,50,50,255]);
+    mat4.translate(modelViewMatrix,modelViewMatrix,[-28,50,0])
+    mat4.scale(modelViewMatrix,modelViewMatrix, [2,15,10])
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    mat4.copy(modelViewMatrix, initialMatrix);    
     loadTexture(gl, [255,0,0,255]);
     for (let i = 0; i<barrels.length; i++) {
         if (barrels[i].attached == "yes") {
