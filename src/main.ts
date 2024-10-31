@@ -45,6 +45,8 @@ websocket.onmessage = (event) => {
     if (event.data == "image") {
         const img = document.getElementById('camera') as HTMLImageElement;
         img.src = `static/image.jpg?${Math.ceil(Math.random() * 1000)}`;        
+    } else if (event.data == "error") {
+        (document.getElementById("error") as HTMLElement).textContent = "Cannot reach X: " +(document.getElementById("xpos") as HTMLInputElement).value+" Y: "+(document.getElementById("ypos") as HTMLInputElement).value;
     } else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ")
         barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no"})
@@ -67,6 +69,7 @@ websocket.onmessage = (event) => {
             }
         }
     } else {
+        (document.getElementById("error") as HTMLElement).textContent = "";
         var obj  = JSON.parse(event.data);
         positions = obj
     }

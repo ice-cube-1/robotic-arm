@@ -35,6 +35,9 @@ websocket.onmessage = (event) => {
         const img = document.getElementById('camera');
         img.src = `static/image.jpg?${Math.ceil(Math.random() * 1000)}`;
     }
+    else if (event.data == "error") {
+        document.getElementById("error").textContent = "Cannot reach X: " + document.getElementById("xpos").value + " Y: " + document.getElementById("ypos").value;
+    }
     else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ");
         barrels.push({ position: [parseFloat(info[1]), parseFloat(info[2])], colorID: [255, barrels.length * 10, 0, 255, 0], attached: "no" });
@@ -62,6 +65,7 @@ websocket.onmessage = (event) => {
         }
     }
     else {
+        document.getElementById("error").textContent = "";
         var obj = JSON.parse(event.data);
         positions = obj;
     }

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
     <style>
-      #xpos, #ypos, #updateButton, #claw, #photoButton, #scan, #step {
+      #xpos, #ypos, #updateButton, #claw, #photoButton, #scan, #step, #error {
         position:absolute;
         left:20px;
       }
@@ -29,6 +29,10 @@
       #scan {
         top: 200px;
       }
+      #error {
+        top: 230px;
+        color: red;
+      }
     </style>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
@@ -49,5 +53,6 @@
     <input type="checkbox" id="claw" name="Open claw" onclick="moveClaw(this)" />
     <button id="photoButton" onclick="takePhoto()">Take Photo</button>
     <button id="scan" onclick="scan()">Scan</button>
+    <div id="error"></div>
   </body>
 </html>

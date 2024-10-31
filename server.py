@@ -9,7 +9,7 @@ from time import sleep
 from barrel import Barrel
 
 async def echo(websocket):
-    arm = Arm(Beam(59.5+4), Beam(67.6+4),Beam(70.6+4),Beam(25,math.radians(90)))
+    arm = Arm(Beam(59.5+4,120,0), Beam(67.6+4,120,0),Beam(70.6+4,160,0),Beam(25,180,0,math.radians(90)))
     camera = Camera()
     barrels: list[Barrel] = []
     async for message in websocket:
@@ -73,8 +73,8 @@ async def echo(websocket):
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)
             arm.setStepper(message[2])
-            if positions != []:
-                await websocket.send(json.dumps(positions))
+            if positions != []: await websocket.send(json.dumps(positions))
+            else: await websocket.send("error")
             await websocket.send("stepperpos "+str(arm.stepperPos))
 
 
