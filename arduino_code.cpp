@@ -32,18 +32,15 @@ void  loop() {
 
 void step(int go) {
   if (pos-go > 0) {
-    digitalWrite(DIR_PIN, HIGH);
+    digitalWrite(DIR_PIN, HIGH); // move forwards
   } else {
-    digitalWrite(DIR_PIN, LOW);
+    digitalWrite(DIR_PIN, LOW); // move backwards
   }
-  for (int i = 0; i < abs(pos-go); i++) {
+  for (int i = 0; i < abs(pos-go); i++) { //move the difference
     digitalWrite(STEP_PIN, HIGH);
     delayMicroseconds(5000);
     digitalWrite(STEP_PIN, LOW);
     delayMicroseconds(5000);
   }
   pos = go;
-}
-int posMod(int i, int n) {
-  return (i % n + n) % n;
 }
