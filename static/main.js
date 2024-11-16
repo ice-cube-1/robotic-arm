@@ -136,10 +136,10 @@ function main() {
     });
     addEventListener("click", function (e) {
         const target = e.target;
-        console.log(target instanceof HTMLElement); // Ensure this logs "true"
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        console.log(x, y);
         drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1000, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -149,10 +149,9 @@ function main() {
         }
         console.log(pixels);
         if (pixels[0] == 255 && pixels[2] == 0) {
-            websocket.send("barrel " + barrels[Math.round(pixels[1] / 10)].position[0] + " " + barrels[Math.round(pixels[1] / 10)].position[0]);
-            console.log("barrel");
+            websocket.send("barrel " + barrels[Math.round(pixels[1] / 10)].position[0] + " " + barrels[Math.round(pixels[1] / 10)].position[1]);
         }
-    });    
+    });
 }
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);

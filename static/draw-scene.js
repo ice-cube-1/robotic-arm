@@ -126,7 +126,8 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     const fieldOfView = (45 * Math.PI) / 180;
-    const aspect = 640 / 480;
+    const canvas = gl.canvas;
+    const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 1000.0;
     const projectionMatrix = mat4.create();
@@ -145,16 +146,17 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const vertexCount = 36;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
-    barrels.forEach((barrel, i) => {
-        if (barrel.attached)
-            loadTexture(gl, new Uint8Array(barrel.colorID));
-        const initialMatrix = mat4.clone(modelViewMatrix);
-        mat4.translate(modelViewMatrix, modelViewMatrix, [barrels[i].position[0] * 2, -15, barrels[i].position[1] * 2]);
-        mat4.scale(modelViewMatrix, modelViewMatrix, [15, 30, 15]);
-        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
-        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
-        mat4.copy(modelViewMatrix, initialMatrix);
-    });
+    for (let i = 0; i < barrels.length; i++) {
+        if (barrels[i].attached != "yes") {
+            const initialMatrix = mat4.clone(modelViewMatrix);
+            loadTexture(gl, new Uint8Array(barrels[i].colorID));
+            mat4.translate(modelViewMatrix, modelViewMatrix, [barrels[i].position[0] * 2, -15, barrels[i].position[1] * 2]);
+            mat4.scale(modelViewMatrix, modelViewMatrix, [15, 30, 15]);
+            gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+            gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+            mat4.copy(modelViewMatrix, initialMatrix);
+        }
+    }
 }
 function setPositionAttribute(gl, buffers, programInfo) {
     const numComponents = 3;

@@ -157,10 +157,11 @@ function main() {
         getMousePosition(e);
     });
     addEventListener("click", function(e: MouseEvent) {
-        const target = e.currentTarget as HTMLButtonElement
+        const target = e.target as HTMLButtonElement
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        console.log(x,y)
         drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1000, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -170,8 +171,7 @@ function main() {
         }
         console.log(pixels)
         if (pixels[0] == 255 && pixels[2] == 0) {
-            websocket.send("barrel "+barrels[Math.round(pixels[1]/10)].position[0]+" "+barrels[Math.round(pixels[1]/10)].position[0])
-            console.log("barrel")
+            websocket.send("barrel "+barrels[Math.round(pixels[1]/10)].position[0]+" "+barrels[Math.round(pixels[1]/10)].position[1])
         }        
     });
 }
