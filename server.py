@@ -28,54 +28,66 @@ async def echo(websocket):
             camera.takePhoto()
             await websocket.send("image")
         elif message[0] == "scan":
-            await websocket.send(json.dumps(arm.setPosition(50,150)))
-            arm.stepperPos = -10
+            position = arm.setPosition(50.0,150.0)
+            await websocket.send(json.dumps(position))
+            sleep(2)
+            arm.stepperPos = 0
             while arm.stepperPos < 100:
-                arm.setStepper(arm.stepperPos+10)
+                arm.setStepper(arm.stepperPos)
+                await websocket.send("stepperpos "+str(200-arm.stepperPos))
                 distance=camera.distance()
-                print(distance)
+                print(distance,arm.stepperPos)
+                camera.takePhoto()
+                await websocket.send("image")
                 while 90 < distance < 200:
                     move = camera.getCentral()
+                    camera.takePhoto()
+                    await websocket.send("image")
                     if abs(move) <= 100:
-                        barrels.append(Barrel(arm.stepperPos, camera.distance()))
+                        barrels.append(Barrel(arm.stepperPos, distance))
                         [print(i.x,i.y, i.distance,i.angle) for i in barrels]
                         await websocket.send("barrel "+barrels[-1].getData())
-                        arm.setStepper(arm.stepperPos+25)
+                        arm.stepperPos+=25
+                        break
                     if arm.stepperPos>100:
                         break
-                    arm.setStepper(arm.stepperPos-int(move/100))
-                    await websocket.send("stepperpos "+str(arm.stepperPos))
+                    arm.stepperPos = arm.stepperPos-int(move/100)
+                    arm.setStepper(arm.stepperPos)
+                    await websocket.send("stepperpos "+str(200-arm.stepperPos))
                     sleep(2)
                     distance = camera.distance()
                     print(distance)
-                await websocket.send("stepperpos "+str(arm.stepperPos))
+                arm.stepperPos+=10
                 sleep(2)
         elif message[0] == "barrel":
             barrel = barrels[0]
             for i in range(len(barrels)): 
                 if barrels[i].x == message[1] and barrels[i].y == message[2]:
-                    await websocket.send(json.dumps(arm.setPosition(50,150)))
+                    position = arm.setPosition(50.0,150.0)
+                    await websocket.send(json.dumps(position))
                     sleep(2)
                     arm.move_claw(45)
                     await websocket.send("claw 45")
                     sleep(2)
                     arm.setStepper(barrels[i].angle)
-                    await websocket.send("stepperpos "+str(arm.stepperPos))
+                    await websocket.send("stepperpos "+str(200-arm.stepperPos))
                     sleep(2)
-                    await websocket.send(json.dumps(arm.setPosition(barrels[i].distance, 0)))
+                    position = arm.setPosition(barrels[i].distance, 30.0)
+                    await websocket.send(json.dumps(position))
                     sleep(2)
                     arm.move_claw(0)
                     await websocket.send("claw 0")
                     barrels[i].gripped = True
                     await websocket.send("attached")
-                    await websocket.send(json.dumps(arm.setPosition(50,150)))
+                    position = arm.setPosition(50.0,150.0)
+                    await websocket.send(json.dumps(position))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)
-            arm.setStepper(message[2])
+            arm.setStepper(int(message[2]))
             if positions != []: await websocket.send(json.dumps(positions))
             else: await websocket.send("error")
-            await websocket.send("stepperpos "+str(arm.stepperPos))
+            await websocket.send("stepperpos "+str(200-arm.stepperPos))
 
 
 async def handle_html(_):

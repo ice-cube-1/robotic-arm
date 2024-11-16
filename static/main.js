@@ -135,7 +135,8 @@ function main() {
         getMousePosition(e);
     });
     addEventListener("click", function (e) {
-        const target = e.currentTarget;
+        const target = e.target;
+        console.log(target instanceof HTMLElement); // Ensure this logs "true"
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -151,7 +152,7 @@ function main() {
             websocket.send("barrel " + barrels[Math.round(pixels[1] / 10)].position[0] + " " + barrels[Math.round(pixels[1] / 10)].position[0]);
             console.log("barrel");
         }
-    });
+    });    
 }
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
