@@ -172,6 +172,7 @@ function main() {
         console.log(pixels)
         if (pixels[0] == 255 && pixels[2] == 0) {
             websocket.send("barrel "+barrels[Math.round(pixels[1]/10)].position[0]+" "+barrels[Math.round(pixels[1]/10)].position[1])
+            barrels[Math.round(pixels[1]/10)].attached="next"
         }        
     });
 }
