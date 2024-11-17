@@ -68,7 +68,7 @@ class Arm:
         except: return []
     def setStepper(self, pos: int) -> None:
         self.stepperPos =pos
-        self.arduino.write(bytes("5"+str(self.stepperPos).zfill(3)+"\n",'utf-8'))
+        self.arduino.write(bytes("5"+str(self.stepperPos%200).zfill(3)+"\n",'utf-8'))
     
     def plotInfo(self) -> list[list[float]]:
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
