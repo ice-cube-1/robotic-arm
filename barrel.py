@@ -7,5 +7,6 @@ class Barrel:
         self.angle = angle
         self.distance = distance
         self.gripped: bool = False
+        self.color: str = "red"
     def getData(self) -> str:
         return str(self.x)+" "+str(self.y)

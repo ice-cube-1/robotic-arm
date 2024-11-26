@@ -1,0 +1,20 @@
+def sort():
+    barrels = scan()
+    colors = []
+    for i in range(len(barrels)):
+        colors.append(barrel[i].color,i)
+    collect("red")
+    collect("orange")
+    collect("yellow")
+    collect("green")
+    collect("blue")
+    collect("purple")
+
+def collect(color):
+    for idx,i in enumerate(colors):
+        if i[0]==color: 
+            pickup(i[1])
+            drop(len(colors)*25, 120)
+            colours[idx][0] = "done"
+
+sort()
