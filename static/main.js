@@ -14,6 +14,9 @@ function updateInfo() {
     const step = document.getElementById("step").value;
     websocket.send(`${x} ${y} ${step}`);
 }
+function run() {
+    websocket.send("code: " + document.getElementById("code").value);
+}
 function takePhoto() {
     websocket.send("photo");
 }
@@ -74,6 +77,7 @@ window.updateInfo = updateInfo;
 window.moveClaw = moveClaw;
 window.takePhoto = takePhoto;
 window.scan = scan;
+window.run = run;
 main();
 function main() {
     const canvas = document.querySelector("#glcanvas");

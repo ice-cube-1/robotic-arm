@@ -17,6 +17,10 @@ function updateInfo() {
     websocket.send(`${x} ${y} ${step}`);
 }
 
+function run() {
+    websocket.send("code: "+(document.getElementById("code") as HTMLInputElement).value)
+}
+
 export type Barrel = {
     position: number[],
     colorID: number[],
@@ -79,6 +83,7 @@ websocket.onmessage = (event) => {
 (window as any).moveClaw = moveClaw;
 (window as any).takePhoto = takePhoto;
 (window as any).scan = scan;
+(window as any).run = run;
 
 main();
 

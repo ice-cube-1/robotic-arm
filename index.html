@@ -18,6 +18,21 @@
       #error {
         color: red;
       }
+      #sidebar {
+        position: absolute;
+        left: 1100px;
+        top: 10px;
+      }
+      #run {
+        position: absolute;
+        left: 10px;
+        top:200px;
+      }
+      #camera {
+        position: absolute;
+        left: 0px;
+        top:240px
+      }
     </style>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
@@ -30,8 +45,11 @@
 
   <body>
     <canvas id="glcanvas" width="1080" height="720"></canvas>
-    <img id="camera" src="" width="640" height="480">
-
+    <div id="sidebar">
+      <textarea id="code" rows="12" cols="90"></textarea>
+      <button id="run" onclick="run()">Run</button>
+      <img id="camera" src="" width="640" height="480">
+    </div>
     <div id="controls">
       <label for="xpos">X Position:</label>
       <input type="text" id="xpos" value="100">

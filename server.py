@@ -33,6 +33,8 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
                 if barrels[i].x == int(message[1]) and barrels[i].y == int(message[2]):
                     print("going to barrel")
                     pickup(arm, camera, websocket, barrels, i)
+        elif message[0] == "code":
+            parse(arm, camera, websocket, barrels, " ".join(message[1:]))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)

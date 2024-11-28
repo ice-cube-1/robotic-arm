@@ -1,6 +1,6 @@
 from movement import scan, pickup, drop, move, rotate
 
-def parse(arm, camera, websocket, barrels):
+def parse(code, arm, camera, websocket, barrels):
     code = "".join(open("sampleCode.txt").readlines())
     old = ["scan(", "pickup(", "drop(", "rotate(", "move("]
     new = ["scan(arm, camera, websocket, barrels, ", 
