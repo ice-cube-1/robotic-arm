@@ -15,6 +15,9 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
     camera = Camera()
     barrels: list[Barrel] = []
     async for message in websocket:
+        if message[:len("code: ")] == "code: ":
+            await parse(arm, camera, websocket, barrels, message[len("code: "):])
+            break
         print(message)
         message = message.split()
         if message[0] == "claw":
@@ -32,8 +35,6 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
                 if barrels[i].x == int(message[1]) and barrels[i].y == int(message[2]):
                     print("going to barrel")
                     pickup(arm, camera, websocket, barrels, i)
-        elif message[0] == "code":
-            parse(arm, camera, websocket, barrels, " ".join(message[1:]))
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)
