@@ -1,13 +1,12 @@
 from movement import scan, pickup, drop, move, rotate
 
 async def parse(arm, camera, websocket, barrels, code):
-    old = ["scan(", "pickup(", "drop(", "rotate(", "move(", "run("]
-    new = ["await scan(arm, camera, websocket, []", 
-           "pickup(arm, websocket, barrels, ", 
-           "drop(arm, websocket, barrels, ",
+    old = ["scan(", "pickup(", "drop(", "rotate(", "move("]
+    new = ["scan(arm, camera, websocket", 
+           "pickup(arm, websocket, ", 
+           "drop(arm, websocket, ",
            "rotate(arm, websocket, ",
-           "move(arm, websocket, ",
-           "asyncio.run("]
+           "move(arm, websocket, ",]
     i=0
     while i < len(code):
         for j in range(len(old)):
@@ -19,5 +18,8 @@ async def parse(arm, camera, websocket, barrels, code):
         i+=1
     print(code)
     print(barrels)
-    exec(code, {"arm": arm, "camera": camera, "websocket": websocket, 
-                "scan": scan, "pickup": pickup, "drop": drop, "move": move, "rotate": rotate})
+    localScope = {"arm": arm, "camera": camera, "websocket": websocket,
+                "scan": scan, "pickup": pickup, "drop": drop, "move": move, "rotate": rotate}
+    exec(code, localScope)
+    await localScope["main"]()
+    

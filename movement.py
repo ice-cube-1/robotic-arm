@@ -6,11 +6,11 @@ from arm_info import Arm
 from camera import Camera
 import websockets
 
-async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]):
+async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel] = []):
         position = arm.setPosition(50.0,150.0)
         await websocket.send(json.dumps(position))
         sleep(2)
-        end = arm.stepperPos+100
+        end = arm.stepperPos+100 # CHANGE TO 200
         while arm.stepperPos < end:
             arm.setStepper(arm.stepperPos)
             await websocket.send("stepperpos "+str(200-arm.stepperPos))
@@ -74,3 +74,4 @@ async def move(arm: Arm, websocket: websockets.WebSocketServerProtocol, x, y):
 async def rotate(arm: Arm, websocket: websockets.WebSocketServerProtocol, stepperpos: int):
     arm.setStepper(stepperpos)
     await websocket.send("stepperpos "+str(200-arm.stepperPos))
+    sleep(2)
