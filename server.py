@@ -14,7 +14,6 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
     arm = Arm(Beam(59.5+4,120,0), Beam(67.6+4,120,0),Beam(70.6+4,160,0),Beam(25,180,0,math.radians(90)))
     camera = Camera()
     barrels: list[Barrel] = []
-    parse(camera,arm,barrels)
     async for message in websocket:
         print(message)
         message = message.split()
