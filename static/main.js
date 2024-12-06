@@ -43,7 +43,8 @@ websocket.onmessage = (event) => {
     }
     else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ");
-        barrels.push({ position: [parseFloat(info[1]), parseFloat(info[2])], colorID: [255, barrels.length * 10, 0, 255, 0], attached: "no" });
+        console.log(info);
+        barrels.push({ position: [parseFloat(info[1]), parseFloat(info[2])], colorID: [255, barrels.length * 10, 0, 255, 0], attached: "no" , color: info[3]});
     }
     else if (event.data.startsWith("stepperpos")) {
         stepperpos = parseInt(event.data.split(" ")[1]);

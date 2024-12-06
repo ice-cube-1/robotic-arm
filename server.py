@@ -22,7 +22,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
         message = message.split()
         if message[0] == "claw":
             if message[1] == "45":
-                drop()
+                drop(arm, websocket, barrels)
             arm.move_claw(float(message[1]))
         elif message[0] == "photo":
             print("photo requested")

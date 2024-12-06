@@ -15,13 +15,13 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             arm.setStepper(arm.stepperPos)
             await websocket.send("stepperpos "+str(200-arm.stepperPos))
             sleep(2)
-            distance=camera.distance()
+            distance,color =camera.distance()
             print(distance,arm.stepperPos)
             while 90 < distance < 240:
                 move = camera.getCentral()
                 print(distance,move)
                 if abs(move) <= 100:
-                    barrels.append(Barrel(arm.stepperPos, distance))
+                    barrels.append(Barrel(arm.stepperPos, distance, color))
                     [print(i.x,i.y, i.distance,i.angle) for i in barrels]
                     await websocket.send("barrel "+barrels[-1].getData())
                     arm.stepperPos+=25
@@ -32,7 +32,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
                 arm.setStepper(arm.stepperPos)
                 await websocket.send("stepperpos "+str(200-arm.stepperPos))
                 sleep(2)
-                distance = camera.distance()
+                distance, color = camera.distance()
                 print(distance)
             arm.stepperPos+=10
             sleep(2)

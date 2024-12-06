@@ -96,9 +96,10 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
-    loadTexture(gl, new Uint8Array([255, 0, 0, 255]));
+    var colors = {"red":[255,0,0,255], "yellow": [255,100,0,255]}
     for (let i = 0; i < barrels.length; i++) {
         if (barrels[i].attached == "yes") {
+            loadTexture(gl, new Uint8Array(colors[barrels[i].color]));
             const initialMatrix = mat4.clone(modelViewMatrix);
             mat4.translate(modelViewMatrix, modelViewMatrix, [positions[4][0] * 2 + 40, positions[4][1] * 2 - 15, 0]);
             mat4.scale(modelViewMatrix, modelViewMatrix, [15, 30, 15]);
@@ -110,6 +111,8 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     mat4.copy(modelViewMatrix, realinitialmatrix);
     for (let i = 0; i < barrels.length; i++) {
         if (barrels[i].attached != "yes") {
+            console.log(colors[barrels[i].color])
+            loadTexture(gl, new Uint8Array(colors[barrels[i].color]));
             const initialMatrix = mat4.clone(modelViewMatrix);
             mat4.translate(modelViewMatrix, modelViewMatrix, [barrels[i].position[0] * 2, -15, barrels[i].position[1] * 2]);
             mat4.scale(modelViewMatrix, modelViewMatrix, [15, 30, 15]);
