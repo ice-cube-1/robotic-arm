@@ -18,20 +18,26 @@ class Camera:
     def getContours(self):
         image = self.camera.capture_array()
         hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        # lower_red1 = np.array([0, 150, 80])
-        # upper_red1 = np.array([10, 255, 255])
-        # lower_red2 = np.array([170, 150, 80])
-        # upper_red2 = np.array([180, 255, 255])
-        # mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
-        # mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
-        # red_object = cv2.bitwise_and(image, image, mask=mask1 | mask2) # type: ignore
-        # contours, _ = cv2.findContours(mask1 | mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # type: ignore
+        lower_red1 = np.array([0, 150, 80])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 150, 80])
+        upper_red2 = np.array([180, 255, 255])
+        redMask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        redMask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
+        redObject = cv2.bitwise_and(image, image, mask=redMask1 | redMask2) # type: ignore
+        redContours, _ = cv2.findContours(redMask1 | redMask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # type: ignore
+        red = sorted(redContours, key=cv2.contourArea, reverse=True)
         lower_yellow = np.array([10, 150, 80])
         upper_yellow = np.array([55, 255, 255])
-        mask1 = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
-        yellowObject = cv2.bitwise_and(image, image, mask=mask1)
-        contours, _ = cv2.findContours(mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        return sorted(contours, key=cv2.contourArea, reverse=True), "yellow"
+        yellowMask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+        yellowObject = cv2.bitwise_and(image, image, mask=yellowMask)
+        yellowContours, _ = cv2.findContours(yellowMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        yellow = sorted(yellowContours, key=cv2.contourArea, reverse=True)
+        print(cv2.contourArea(red[0]), cv2.contourArea(yellow[0]))
+        if cv2.contourArea(red[0]) > cv2.contourArea(yellow[0]):
+            return red, "red"
+        else:
+            return yellow, "yellow"
 
 
     def distance(self) -> float:

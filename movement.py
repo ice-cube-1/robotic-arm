@@ -16,7 +16,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             await websocket.send("stepperpos "+str(200-arm.stepperPos))
             sleep(2)
             distance,color =camera.distance()
-            print(distance,arm.stepperPos)
+            print(distance,color)
             while 90 < distance < 240:
                 move = camera.getCentral()
                 print(distance,move)
