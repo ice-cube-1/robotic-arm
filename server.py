@@ -34,7 +34,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
             for i in range(len(barrels)): 
                 if barrels[i].x == int(message[1]) and barrels[i].y == int(message[2]):
                     print("going to barrel")
-                    pickup(arm, camera, websocket, barrels, i)
+                    await pickup(arm, websocket, barrels, i)
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)

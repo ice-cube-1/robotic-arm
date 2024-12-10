@@ -24,7 +24,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
                     barrels.append(Barrel(arm.stepperPos, distance, color))
                     [print(i.x,i.y, i.distance,i.angle) for i in barrels]
                     await websocket.send("barrel "+barrels[-1].getData())
-                    arm.stepperPos+=25
+                    arm.stepperPos+=15
                     break
                 if arm.stepperPos>end:
                     break

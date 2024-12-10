@@ -96,7 +96,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
-    var colors = {"red":[255,0,0,255], "yellow": [255,200,0,255]}
+    var colors = {"red":[255,0,0,255], "yellow": [255,200,0,255], "blue": [0,50,255,255]}
     for (let i = 0; i < barrels.length; i++) {
         if (barrels[i].attached == "yes") {
             loadTexture(gl, new Uint8Array(colors[barrels[i].color]));

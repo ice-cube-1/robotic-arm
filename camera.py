@@ -27,17 +27,56 @@ class Camera:
         redObject = cv2.bitwise_and(image, image, mask=redMask1 | redMask2) # type: ignore
         redContours, _ = cv2.findContours(redMask1 | redMask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # type: ignore
         red = sorted(redContours, key=cv2.contourArea, reverse=True)
+
         lower_yellow = np.array([10, 150, 80])
         upper_yellow = np.array([55, 255, 255])
         yellowMask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
         yellowObject = cv2.bitwise_and(image, image, mask=yellowMask)
         yellowContours, _ = cv2.findContours(yellowMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         yellow = sorted(yellowContours, key=cv2.contourArea, reverse=True)
-        print(cv2.contourArea(red[0]), cv2.contourArea(yellow[0]))
-        if cv2.contourArea(red[0]) > cv2.contourArea(yellow[0]):
-            return red, "red"
+        
+        lower_blue = np.array([90, 150, 80])
+        upper_blue = np.array([130, 255, 255])
+        blueMask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+        blueObject = cv2.bitwise_and(image, image, mask=blueMask)
+        blueContours, _ = cv2.findContours(blueMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        blue = sorted(blueContours, key=cv2.contourArea, reverse=True)
+        if blue:
+            if red:
+                if yellow:       
+                    if cv2.contourArea(blue[0]) == max(cv2.contourArea(blue[0]), cv2.contourArea(red[0]), cv2.contourArea(yellow[0])):
+                        return blue, "blue"
+                    if cv2.contourArea(red[0]) > cv2.contourArea(yellow[0]):
+                        return red, "red"
+                    else:
+                        return yellow, "yellow"
+                else:
+                    if cv2.contourArea(red[0]) > cv2.contourArea(blue[0]):
+                        return red, "red"
+                    else:
+                        return blue, "blue"
+            else:
+                if yellow:
+                    if cv2.contourArea(yellow[0]) > cv2.contourArea(blue[0]):
+                        return yellow, "yellow"
+                    else:
+                        return blue, "blue"
+                else:
+                    return blue, "blue"
         else:
-            return yellow, "yellow"
+            if red:
+                if yellow:
+                    if cv2.contourArea(red[0]) > cv2.contourArea(yellow[0]):
+                        return red, "red"
+                    else:
+                        return yellow, "yellow"
+                else:
+                    return red, "red"
+            else:
+                if yellow:
+                    return yellow, "yellow"
+                else: return -1
+
 
 
     def distance(self) -> float:
