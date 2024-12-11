@@ -48,7 +48,7 @@ async def pickup(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrel
     arm.setStepper(barrels[i].angle)
     await websocket.send("stepperpos "+str(200-arm.stepperPos))
     sleep(2)
-    position = arm.setPosition(barrels[i].distance, 70.0)
+    position = arm.setPosition(barrels[i].distance, 30.0)
     await websocket.send(json.dumps(position))
     sleep(2)
     arm.move_claw(0)

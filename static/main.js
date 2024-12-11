@@ -71,6 +71,7 @@ websocket.onmessage = (event) => {
     else {
         document.getElementById("error").textContent = "";
         var obj = JSON.parse(event.data);
+        console.log(obj)
         positions = obj;
     }
 };
