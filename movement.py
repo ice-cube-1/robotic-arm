@@ -38,7 +38,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             sleep(2)
         return barrels
         
-async def pickup(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int):
+async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int):
     position = arm.setPosition(50.0,150.0)
     await websocket.send(json.dumps(position))
     sleep(2)
@@ -46,15 +46,28 @@ async def pickup(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrel
     await websocket.send("claw "+str(math.pi/2))
     sleep(2)
     arm.setStepper(barrels[i].angle)
+    move = camera.getCentral()
+    sleep(2)
+    while abs(move) > 100:
+        arm.stepperPos = arm.stepperPos-int(move/100)
+        arm.setStepper(arm.stepperPos)
+        await websocket.send("stepperpos "+str(200-arm.stepperPos))
+        move = camera.getCentral()
+        sleep(2)
+    sleep(2)
+    arm.setStepper(arm.stepperPos)
     await websocket.send("stepperpos "+str(200-arm.stepperPos))
     sleep(2)
-    position = arm.setPosition(barrels[i].distance, 30.0)
+    distance, color = camera.distance()
+    position = arm.setPosition(distance, 15.0)
+    print("important stuff", position, distance)
     await websocket.send(json.dumps(position))
     sleep(2)
     arm.move_claw(0)
     await websocket.send("claw "+str(math.pi/4))
     barrels[i].gripped = True
     await websocket.send("attached")
+    sleep(2)
     position = arm.setPosition(50.0,150.0)
     await websocket.send(json.dumps(position))
 

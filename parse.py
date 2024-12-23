@@ -3,7 +3,7 @@ from movement import scan, pickup, drop, move, rotate
 async def parse(arm, camera, websocket, barrels, code):
     old = ["scan(", "pickup(", "drop(", "rotate(", "move("]
     new = ["scan(arm, camera, websocket", 
-           "pickup(arm, websocket, ", 
+           "pickup(arm, camera, websocket, ", 
            "drop(arm, websocket, ",
            "rotate(arm, websocket, ",
            "move(arm, websocket, ",]
