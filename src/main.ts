@@ -52,6 +52,13 @@ websocket.onmessage = (event) => {
         img.src = `static/image.jpg?${Math.ceil(Math.random() * 1000)}`;        
     } else if (event.data == "error") {
         (document.getElementById("error") as HTMLElement).textContent = "Cannot reach X: " +(document.getElementById("xpos") as HTMLInputElement).value+" Y: "+(document.getElementById("ypos") as HTMLInputElement).value;
+    } else if (event.data.startsWith("output")) {
+        const actualout = event.data.substr(event.data.indexOf(" ") + 1)
+        if (actualout == "clear") {
+            (document.getElementById("output") as HTMLElement).innerHTML=""
+        } else {
+            (document.getElementById("output") as HTMLElement).innerHTML = (document.getElementById("output") as HTMLElement).innerHTML + "<br/>"+actualout
+        }
     } else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ")
         barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no", color: info[3]})
