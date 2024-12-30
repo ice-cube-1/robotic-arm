@@ -23,6 +23,12 @@
         left: 1100px;
         top: 10px;
       }
+      #output {
+        position:absolute;
+        top: 0px;
+      	width: 180px;
+        left: 450px;
+      }
       #run {
         position: absolute;
         left: 10px;
@@ -46,7 +52,8 @@
   <body>
     <canvas id="glcanvas" width="1080" height="720"></canvas>
     <div id="sidebar">
-      <textarea id="code" rows="12" cols="90"></textarea>
+      <textarea id="code" rows="12" cols="60"></textarea>
+      <div id = "output"></div>
       <button id="run" onclick="run()">Run</button>
       <img id="camera" src="" width="640" height="480">
     </div>
