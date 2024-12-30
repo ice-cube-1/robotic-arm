@@ -16,8 +16,8 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
     barrels: list[Barrel] = []
     async for message in websocket:
         if message[:len("code: ")] == "code: ":
-            await parse(arm, camera, websocket, barrels, message[len("code: "):])
-            break
+            barrels = await parse(arm, camera, websocket, barrels, message[len("code: "):])
+            continue
         print(message)
         message = message.split()
         if message[0] == "claw":

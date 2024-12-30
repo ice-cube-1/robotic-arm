@@ -1,25 +1,18 @@
-from movement import scan, pickup, drop, move, rotate
+import movement
 
 async def parse(arm, camera, websocket, barrels, code):
-    old = ["scan(", "pickup(", "drop(", "rotate(", "move("]
-    new = ["scan(arm, camera, websocket", 
-           "pickup(arm, camera, websocket, ", 
-           "drop(arm, websocket, ",
-           "rotate(arm, websocket, ",
-           "move(arm, websocket, ",]
-    i=0
-    while i < len(code):
-        for j in range(len(old)):
-            if len(code)-i > len(old[j]):
-                if code[i:i+len(old[j])] == old[j]:
-                    print("replacing")
-                    code = code[:i]+new[j]+code[i+len(old[j]):]
-                    i+=8
-        i+=1
     print(code)
+    scan = lambda *args: movement.scan(arm, camera, websocket, *args)
+    pickup = lambda *args: movement.pickup(arm, camera, websocket, *args)
+    drop = lambda *args: movement.drop(arm, websocket, *args)
+    rotate = lambda *args: movement.rotate(arm, websocket, *args)
+    move = lambda *args: movement.rotate(arm, websocket, *args)
+    exec(
+        f'async def __ex(): ' +
+        ''.join(f'\n {l}' for l in code.split('\n'))
+        , locals()
+    )
+    await locals()['__ex']()
     print(barrels)
-    localScope = {"arm": arm, "camera": camera, "websocket": websocket,
-                "scan": scan, "pickup": pickup, "drop": drop, "move": move, "rotate": rotate}
-    exec(code, localScope)
-    await localScope["main"]()
-    
+    print("done")
+    return barrels
