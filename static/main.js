@@ -1,4 +1,3 @@
-
 import { initBuffers } from "./cube-buffer.js";
 import { drawScene, drawSceneForPicking } from "./draw-scene.js";
 var mousedown = false;
@@ -43,11 +42,12 @@ websocket.onmessage = (event) => {
         document.getElementById("error").textContent = "Cannot reach X: " + document.getElementById("xpos").value + " Y: " + document.getElementById("ypos").value;
     }
     else if (event.data.startsWith("output")) {
-        const actualout = event.data.substr(event.data.indexOf(" ") + 1)
+        const actualout = event.data.substr(event.data.indexOf(" ") + 1);
         if (actualout == "clear") {
-            document.getElementById("output").innerHTML=""
-        } else {
-            document.getElementById("output").innerHTML = document.getElementById("output").innerHTML + "<br/>"+actualout
+            document.getElementById("output").innerHTML = "";
+        }
+        else {
+            document.getElementById("output").innerHTML = document.getElementById("output").innerHTML + "<br/>" + actualout;
         }
     }
     else if (event.data.startsWith("barrel ")) {
