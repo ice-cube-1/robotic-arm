@@ -23,4 +23,4 @@ This returns the distance of the nearest red, yellow or blue object and its colo
 
     camera.getCentral(self) -> int
 
-Returns the number of pixels the center of the detected object is from the center (less than 100-150 generally means it is centered)
+Returns the number of pixels the center of the detected object is from the center (less than 100 generally means it is centered)

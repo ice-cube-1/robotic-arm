@@ -2,7 +2,7 @@
 
 Some extra points to note about using these:
 
-* Any function defined must by asynchronous as the code is all run within an async function. Likewise, any of the below functions must be called with await.
+* Any function defined must be asynchronous as the code is all run within an async function. Likewise, any of the below functions must be called with await.
 
         async def x():
             await output("hello")
@@ -11,7 +11,7 @@ Some extra points to note about using these:
 * These functions have extra parameters that are automatically passed in from your code. These are the arm, the websocket and the camera (scan and pickup only).
 
 ## Scan
-This scans a full 360 degrees ands adds any barrels it detects to the render. It also 
+This scans a full 360 degrees ands adds any barrels it detects to the render.
 
     async def scan(barrels: list[Barrel] = []) -> list[Barrel]
 
@@ -23,7 +23,7 @@ This works as follows:
 4. The barrel's colour and position is then added to the list of barrels, and sent back to the website via websocket
 5. This repeats until it has reached the start point, when it returns a list of all barrels detected
 
-Passing a pre-populated list of barrels will produce duplicates, so the only reccomended use of this parameter is if there is a barrel picked up at the point of scan
+Any barrels passed in will be removed unless they are currently gripped.
 
 ## Pickup
 From the list of barrels passed in, it picks up the one at index i.
@@ -47,7 +47,7 @@ Moves the arm to the requested x (horizontal distance from pivot, mm) and y (ver
 ## Rotate
 Rotates the entire arm, taking into account that it cannot continuously rotate in one direction. A full 360 degree rotation is divided into 200 steps.
 
-    async def rotate(x: float, y: float) -> None
+    async def rotate(steps: int) -> None
 
 ## Output
 Print statements do not work in this UI, so this is the asynchronous equivalent. These show up to the right of the code input, acting as a basic console.

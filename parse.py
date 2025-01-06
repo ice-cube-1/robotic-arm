@@ -11,7 +11,7 @@ async def parse(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerP
     drop = lambda *args: movement.drop(arm, websocket, *args)
     rotate = lambda *args: movement.rotate(arm, websocket, *args)
     move = lambda *args: movement.rotate(arm, websocket, *args)
-    async def output(x):
+    async def output(x: str) -> None:
         print("outputting",x)
         await websocket.send("output "+x)
     await output("clear")

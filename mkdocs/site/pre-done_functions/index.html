@@ -120,7 +120,7 @@
 <p>Some extra points to note about using these:</p>
 <ul>
 <li>
-<p>Any function defined must by asynchronous as the code is all run within an async function. Likewise, any of the below functions must be called with await.</p>
+<p>Any function defined must be asynchronous as the code is all run within an async function. Likewise, any of the below functions must be called with await.</p>
 <pre><code>async def x():
     await output("hello")
 await x()
@@ -131,7 +131,7 @@ await x()
 </li>
 </ul>
 <h2 id="scan">Scan</h2>
-<p>This scans a full 360 degrees ands adds any barrels it detects to the render. It also </p>
+<p>This scans a full 360 degrees ands adds any barrels it detects to the render.</p>
 <pre><code>async def scan(barrels: list[Barrel] = []) -&gt; list[Barrel]
 </code></pre>
 <p>This works as follows:</p>
@@ -142,7 +142,7 @@ await x()
 <li>The barrel's colour and position is then added to the list of barrels, and sent back to the website via websocket</li>
 <li>This repeats until it has reached the start point, when it returns a list of all barrels detected</li>
 </ol>
-<p>Passing a pre-populated list of barrels will produce duplicates, so the only reccomended use of this parameter is if there is a barrel picked up at the point of scan</p>
+<p>Any barrels passed in will be removed unless they are currently gripped.</p>
 <h2 id="pickup">Pickup</h2>
 <p>From the list of barrels passed in, it picks up the one at index i.</p>
 <pre><code>async def pickup(barrels: list[Barrel], i: int) -&gt; list[Barrel]
@@ -159,7 +159,7 @@ await x()
 </code></pre>
 <h2 id="rotate">Rotate</h2>
 <p>Rotates the entire arm, taking into account that it cannot continuously rotate in one direction. A full 360 degree rotation is divided into 200 steps.</p>
-<pre><code>async def rotate(x: float, y: float) -&gt; None
+<pre><code>async def rotate(steps: int) -&gt; None
 </code></pre>
 <h2 id="output">Output</h2>
 <p>Print statements do not work in this UI, so this is the asynchronous equivalent. These show up to the right of the code input, acting as a basic console.</p>
