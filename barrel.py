@@ -8,5 +8,6 @@ class Barrel:
         self.distance = distance
         self.gripped: bool = False
         self.color: str = color
+        
     def getData(self) -> str:
         return str(self.x)+" "+str(self.y)+" "+self.color

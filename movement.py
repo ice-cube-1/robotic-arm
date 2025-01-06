@@ -6,7 +6,7 @@ from arm_info import Arm
 from camera import Camera
 import websockets
 
-async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel] = []):
+async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel] = []) -> list[Barrel]:
         position = arm.setPosition(50.0,150.0)
         await websocket.send(json.dumps(position))
         sleep(2)
@@ -38,7 +38,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             sleep(2)
         return barrels
         
-async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int):
+async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int) -> list[Barrel]:
     success = False
     while not success:
         position = arm.setPosition(50.0,150.0)
@@ -77,7 +77,7 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
             return barrels
 
 
-async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]):
+async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]) -> list[Barrel]:
     for i in range(len(barrels)):
         if barrels[i].gripped==True:
             barrels[i] = Barrel(arm.stepperPos, arm.beam3.endy)
@@ -86,12 +86,12 @@ async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels:
     arm.move_claw(45)
     return barrels
 
-async def move(arm: Arm, websocket: websockets.WebSocketServerProtocol, x, y):
+async def move(arm: Arm, websocket: websockets.WebSocketServerProtocol, x, y) -> None:
     positions = arm.setPosition(x,y)
     await websocket.send(json.dumps(positions))
     sleep(2)
 
-async def rotate(arm: Arm, websocket: websockets.WebSocketServerProtocol, stepperpos: int):
+async def rotate(arm: Arm, websocket: websockets.WebSocketServerProtocol, stepperpos: int) -> None:
     arm.setStepper(stepperpos)
     await websocket.send("stepperpos "+str(200-arm.stepperPos))
     sleep(2)

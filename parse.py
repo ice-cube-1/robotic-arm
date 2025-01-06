@@ -1,6 +1,10 @@
 import movement
+from arm_info import Arm
+from camera import Camera
+from barrel import Barrel
+import websockets
 
-async def parse(arm, camera, websocket, barrels, code):
+async def parse(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], code: str) -> list[Barrel]:
     print(code)
     scan = lambda *args: movement.scan(arm, camera, websocket, *args)
     pickup = lambda *args: movement.pickup(arm, camera, websocket, *args)
