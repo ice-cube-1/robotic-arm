@@ -2,6 +2,8 @@ site_name: Coding the arm
 theme:
   name: mkdocs
   color_mode: dark
+extra_javascript: 
+ - add_index.js
 nav:
  - index.md
  - pre-done_functions.md
