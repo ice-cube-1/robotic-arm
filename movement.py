@@ -74,6 +74,7 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
             success= True
             barrels[i].gripped = True
             await websocket.send("attached")
+            return barrels
 
 
 async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]):
@@ -88,6 +89,7 @@ async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels:
 async def move(arm: Arm, websocket: websockets.WebSocketServerProtocol, x, y):
     positions = arm.setPosition(x,y)
     await websocket.send(json.dumps(positions))
+    sleep(2)
 
 async def rotate(arm: Arm, websocket: websockets.WebSocketServerProtocol, stepperpos: int):
     arm.setStepper(stepperpos)

@@ -29,6 +29,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol):
             camera.takePhoto()
             await websocket.send("image")
         elif message[0] == "scan":
+            await websocket.send("clearscan")
             barrels = await scan(arm, camera, websocket, barrels)
         elif message[0] == "barrel":
             for i in range(len(barrels)): 

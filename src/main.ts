@@ -80,6 +80,14 @@ websocket.onmessage = (event) => {
                 barrels[i].position = event.data.split(" ").slice(1)
             }
         }
+    } else if (event.data == "clearscan") {
+        var newbarrels = []
+        for (var i = 0; i<barrels.length; i++) {
+            if (barrels[i].attached == "yes") {  
+                newbarrels.push(barrels[i])              
+            }
+        }
+        barrels = newbarrels
     } else {
         (document.getElementById("error") as HTMLElement).textContent = "";
         var obj  = JSON.parse(event.data);

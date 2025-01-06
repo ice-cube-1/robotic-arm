@@ -1,0 +1,9 @@
+site_name: Coding the arm
+theme:
+  name: mkdocs
+  color_mode: dark
+nav:
+ - index.md
+ - pre-done_functions.md
+ - barrel.md
+ - camera.md

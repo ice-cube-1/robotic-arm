@@ -76,6 +76,15 @@ websocket.onmessage = (event) => {
             }
         }
     }
+    else if (event.data == "clearscan") {
+        var newbarrels = [];
+        for (var i = 0; i < barrels.length; i++) {
+            if (barrels[i].attached == "yes") {
+                newbarrels.push(barrels[i]);
+            }
+        }
+        barrels = newbarrels;
+    }
     else {
         document.getElementById("error").textContent = "";
         var obj = JSON.parse(event.data);
