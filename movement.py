@@ -7,6 +7,7 @@ from camera import Camera
 import websockets
 
 async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel] = []) -> list[Barrel]:
+        barrels = [i for i in barrels if i.gripped]
         position = arm.setPosition(50.0,150.0)
         await websocket.send(json.dumps(position))
         sleep(2)
