@@ -53,6 +53,7 @@ async def start_servers():
     app = web.Application()
     app.router.add_get('/', handle_html)
     app.router.add_static('/static/', path='./static', name='static')
+    app.router.add_static('/docs', path='./mkdocs/site', name='docs', show_index=True)
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "192.168.137.81", 8080)
