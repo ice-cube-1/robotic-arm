@@ -11,7 +11,7 @@ from parse import parse
 from movement import scan, pickup, drop
 
 async def echo(websocket: websockets.WebSocketServerProtocol) -> None:
-    arm = Arm(Beam(59.5+4,120,0), Beam(67.6+4,120,0),Beam(70.6+4,160,0),Beam(25,180,0,math.radians(90)))
+    arm = Arm(Beam(98.5,120,0), Beam(101.5,120,0),Beam(101.5,160,0),Beam(65.5,180,0,math.radians(90)))
     camera = Camera()
     barrels: list[Barrel] = []
     async for message in websocket:

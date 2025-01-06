@@ -1,4 +1,4 @@
-## Barrel
+# Barrel
 
 Barrels should not be manually created, but retrieving their properties is often useful.
 
