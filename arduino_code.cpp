@@ -24,7 +24,8 @@ void  loop() {
     if (data.substring(0,1).toInt() == 5) {
       step(data.substring(1,4).toInt());
     } else {
-      servo[data.substring(0,1).toInt()-1].write(data.substring(1,4).toInt());    
+      servo[data.substring(0,1).toInt()-1].write(data.substring(1,4).toInt());   
+      delay(250); 
     }
     data = data.substring(4);
   }
@@ -32,15 +33,18 @@ void  loop() {
 
 void step(int go) {
   if (pos-go > 0) {
-    digitalWrite(DIR_PIN, HIGH); // move forwards
+    digitalWrite(DIR_PIN, HIGH);
   } else {
-    digitalWrite(DIR_PIN, LOW); // move backwards
+    digitalWrite(DIR_PIN, LOW);
   }
-  for (int i = 0; i < abs(pos-go); i++) { //move the difference
+  for (int i = 0; i < abs(pos-go); i++) {
     digitalWrite(STEP_PIN, HIGH);
     delayMicroseconds(5000);
     digitalWrite(STEP_PIN, LOW);
     delayMicroseconds(5000);
   }
   pos = go;
+}
+int posMod(int i, int n) {
+  return (i % n + n) % n;
 }

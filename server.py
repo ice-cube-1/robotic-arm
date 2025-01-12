@@ -11,7 +11,7 @@ from parse import parse
 from movement import scan, pickup, drop
 
 async def echo(websocket: websockets.WebSocketServerProtocol) -> None:
-    arm = Arm(Beam(98.5,120,0), Beam(101.5,120,0),Beam(101.5,160,0),Beam(65.5,180,0,math.radians(90)))
+    arm = Arm(Beam(98.5,135,0), Beam(101.5,135,0),Beam(81.5,135,0),Beam(65.5,180,0,math.radians(90)))
     camera = Camera()
     barrels: list[Barrel] = []
     async for message in websocket:
@@ -22,7 +22,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol) -> None:
         message = message.split()
         if message[0] == "claw":
             if message[1] == "45":
-                drop(arm, websocket, barrels)
+                await drop(arm, websocket, barrels)
             arm.move_claw(float(message[1]))
         elif message[0] == "photo":
             print("photo requested")

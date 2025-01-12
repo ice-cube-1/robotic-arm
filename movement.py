@@ -8,7 +8,7 @@ import websockets
 
 async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel] = []) -> list[Barrel]:
         barrels = [i for i in barrels if i.gripped]
-        position = arm.setPosition(50.0,150.0)
+        position = arm.setPosition(100.0,250.0)
         await websocket.send(json.dumps(position))
         sleep(2)
         end = arm.stepperPos+200
@@ -18,7 +18,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             sleep(2)
             distance,color =camera.distance()
             print(distance,color)
-            while 90 < distance < 300:
+            while 90 < distance < 400:
                 move = camera.getCentral()
                 print(distance,move)
                 if abs(move) <= 100:
@@ -42,7 +42,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
 async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int) -> list[Barrel]:
     success = False
     while not success:
-        position = arm.setPosition(50.0,150.0)
+        position = arm.setPosition(100.0,250.0)
         await websocket.send(json.dumps(position))
         sleep(2)
         arm.move_claw(45)
@@ -69,9 +69,9 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
         arm.move_claw(0)
         await websocket.send("claw "+str(math.pi/4))
         sleep(2)
-        position = arm.setPosition(50.0,150.0)
+        position = arm.setPosition(100.0,250.0)
         await websocket.send(json.dumps(position))
-        if not (arm.getCentral()<150 and 90<arm.distance()<300):
+        if not (arm.getCentral()<100 and 100<arm.distance()<400):
             success= True
             barrels[i].gripped = True
             await websocket.send("attached")
