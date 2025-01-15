@@ -52,7 +52,7 @@ websocket.onmessage = (event) => {
     }
     else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ");
-        barrels.push({ position: [parseFloat(info[1]), parseFloat(info[2])], colorID: [255, barrels.length * 10, 0, 255, 0], attached: "no", color: info[3] });
+        barrels.push({ position: [parseFloat(info[1]), parseFloat(info[2])], colorID: [255, barrels.length * 10, 0, 255], attached: "no", color: info[3] });
     }
     else if (event.data.startsWith("stepperpos")) {
         stepperpos = parseInt(event.data.split(" ")[1]);
@@ -149,7 +149,7 @@ function main() {
     const buffers = initBuffers(gl);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1500, angle, barrels, stepperpos);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1000, angle, barrels, stepperpos);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -162,7 +162,8 @@ function main() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         console.log(x, y);
-        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1500, barrels);
+        console.log(barrels)
+        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1000, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
         const scale = 255 / Math.max(...pixels.subarray(0, 3));

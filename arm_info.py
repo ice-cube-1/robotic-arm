@@ -75,8 +75,8 @@ class Arm:
         return [[0,0, self.beam1.endx, self.beam2.endx, self.beam2.endx+self.beam3.length], [0, self.beam0.length, self.beam1.endy, self.beam2.endy, self.beam2.endy]]
     
     def sendToArduino(self) -> None:
-        print("1" + str(self.beam1.angle).zfill(3) + "2" + str(self.beam2.angle).zfill(3) + "3" + str(self.beam3.angle).zfill(3))
-        self.arduino.write(bytes("1" + str(self.beam1.angle).zfill(3) + "2" + str(self.beam2.angle).zfill(3) + "3" + str(self.beam3.angle).zfill(3) + "\n", 'utf-8'))
+        print("3"+ str(self.beam3.angle).zfill(3) + "1" + str(self.beam1.angle).zfill(3) + "2" + str(self.beam2.angle).zfill(3))
+        self.arduino.write(bytes("3" + str(self.beam3.angle).zfill(3) + "2" + str(self.beam2.angle).zfill(3) + "1" + str(self.beam1.angle).zfill(3) + "\n", 'utf-8'))
 
     def move_claw(self, claw_pos):
         self.clawOpen = claw_pos
