@@ -41,7 +41,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
         
 async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int) -> list[Barrel]:
     if not (175 <= barrels[i].distance <= 215):
-         await websocket.send("error")
+         await websocket.send("barrelerror")
          return
     success = False
     while not success:

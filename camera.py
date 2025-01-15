@@ -24,7 +24,7 @@ class Camera:
             "red": [(np.array([0, 150, 80]), np.array([10, 255, 255])),
                     (np.array([170, 150, 80]), np.array([180, 255, 255]))],
             "yellow": [(np.array([10, 150, 80]), np.array([55, 255, 255]))],
-            "green": [(np.array([60, 130, 70]), np.array([100, 255, 255]))],
+            "green": [(np.array([70, 150, 80]), np.array([100, 255, 255]))],
             "blue": [(np.array([100, 150, 80]), np.array([130, 255, 255]))]
         }
 

@@ -40,6 +40,13 @@ websocket.onmessage = (event) => {
     }
     else if (event.data == "error") {
         document.getElementById("error").textContent = "Cannot reach X: " + document.getElementById("xpos").value + " Y: " + document.getElementById("ypos").value;
+    } else if (event.data == "barrelerror") {
+        document.getElementById("error").textContent = "Cannot reach barrel";
+        for (let i = 0; i<barrels.length; i++) {
+            if (barrels[i].attached == "next") {
+                barrels[i].attached = "no"
+            }
+        }
     }
     else if (event.data.startsWith("output")) {
         const actualout = event.data.substr(event.data.indexOf(" ") + 1);
