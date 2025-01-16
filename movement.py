@@ -11,7 +11,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
         position = arm.setPosition(100.0,250.0)
         await websocket.send(json.dumps(position))
         sleep(2)
-        end = arm.stepperPos+50
+        end = arm.stepperPos+200
         while arm.stepperPos < end:
             arm.setStepper(arm.stepperPos)
             await websocket.send("stepperpos "+str(200-arm.stepperPos))
@@ -40,7 +40,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
         return barrels
         
 async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int) -> list[Barrel]:
-    if not (175 <= barrels[i].distance <= 215):
+    if not (190 <= barrels[i].distance <= 230):
          await websocket.send("barrelerror")
          return
     success = False
@@ -65,6 +65,7 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
         await websocket.send("stepperpos "+str(200-arm.stepperPos))
         sleep(2)
         position = arm.setPosition(170.0, 20.0)
+        await websocket.send(json.dumps(position))
         sleep(2)
         position = arm.setPosition(barrels[i].distance, 50.0)
         print("important stuff", position, barrels[i].distance)
@@ -73,19 +74,21 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
         arm.move_claw(0)
         await websocket.send("claw "+str(math.pi/4))
         sleep(2)
-        position = arm.setPosition(200.0,150.0)
+        position = arm.setPosition(150.0,200.0)
         await websocket.send(json.dumps(position))
-        if not (camera.getCentral()<100 and 100<camera.distance()[0]<400):
+        print("has picked up?", camera.getCentral(), camera.distance()[0], barrels[i].distance)
+        if not (camera.getCentral()<100 and abs(camera.distance()[0]-barrels[i].distance)<50):
             success= True
             barrels[i].gripped = True
             await websocket.send("attached")
             return barrels
+        print("retrying")
 
 
 async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]) -> list[Barrel]:
     for i in range(len(barrels)):
         if barrels[i].gripped==True:
-            barrels[i] = Barrel(arm.stepperPos, arm.beam3.endy)
+            barrels[i] = Barrel(arm.stepperPos, arm.beam3.endy, barrels[i].color)
             barrels[i].gripped = False
             await websocket.send("dropped "+barrels[i].getData())
     arm.move_claw(45)
