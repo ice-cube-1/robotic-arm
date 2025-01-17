@@ -156,7 +156,7 @@ function main() {
     const buffers = initBuffers(gl);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1000, angle, barrels, stepperpos);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1800, angle, barrels, stepperpos);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -170,7 +170,7 @@ function main() {
         const y = e.clientY - rect.top;
         console.log(x, y);
         console.log(barrels)
-        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1000, barrels);
+        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1800, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
         const scale = 255 / Math.max(...pixels.subarray(0, 3));
