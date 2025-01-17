@@ -18,7 +18,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             sleep(2)
             distance,color =camera.distance()
             print(distance,color)
-            while 90 < distance < 400:
+            while 90 < distance < 400 and (5 < arm.stepperPos%200 < 195):
                 move = camera.getCentral()
                 print(distance,move)
                 if abs(move) <= 100:
@@ -40,7 +40,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
         return barrels
         
 async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel], i: int) -> list[Barrel]:
-    if not (190 <= barrels[i].distance <= 230):
+    if not (170 <= barrels[i].distance <= 210):
          await websocket.send("barrelerror")
          return
     success = False
@@ -64,7 +64,7 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
         arm.setStepper(arm.stepperPos)
         await websocket.send("stepperpos "+str(200-arm.stepperPos))
         sleep(2)
-        position = arm.setPosition(170.0, 20.0)
+        position = arm.setPosition(160.0, 30.0)
         await websocket.send(json.dumps(position))
         sleep(2)
         position = arm.setPosition(barrels[i].distance, 50.0)

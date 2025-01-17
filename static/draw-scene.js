@@ -131,10 +131,10 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const canvas = gl.canvas;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 1000.0;
+    const zFar = 5000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    let modelViewMatrix = mat4.create();
+    const modelViewMatrix = mat4.create();
     const xpos = -zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     const ypos = zoom * Math.sin(cameraRotationY);
     const zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);
@@ -152,7 +152,6 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
         if (barrels[i].attached != "yes") {
             const initialMatrix = mat4.clone(modelViewMatrix);
             loadTexture(gl, new Uint8Array(barrels[i].colorID));
-            console.log(barrels[i].colorID);
             mat4.translate(modelViewMatrix, modelViewMatrix, [barrels[i].position[0] * 2, -15, barrels[i].position[1] * 2]);
             mat4.scale(modelViewMatrix, modelViewMatrix, [15, 30, 15]);
             gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
