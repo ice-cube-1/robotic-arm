@@ -22,7 +22,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol) -> None:
         message = message.split()
         if message[0] == "claw":
             if message[1] == "45":
-                await drop(arm, websocket, barrels)
+                barrels = await drop(arm, websocket, barrels)
             arm.move_claw(float(message[1]))
         elif message[0] == "photo":
             print("photo requested")
@@ -35,7 +35,7 @@ async def echo(websocket: websockets.WebSocketServerProtocol) -> None:
             for i in range(len(barrels)): 
                 if barrels[i].x == int(message[1]) and barrels[i].y == int(message[2]):
                     print("going to barrel")
-                    await pickup(arm, camera, websocket, barrels, i)
+                    barrels = await pickup(arm, camera, websocket, barrels, i)
         else:
             positions = arm.setPosition(float(message[0]),float(message[1]))
             sleep(2)
