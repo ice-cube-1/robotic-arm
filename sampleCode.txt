@@ -1,16 +1,8 @@
-async def main():
-    barrels = await scan()
-    colors = []
-    for i in range(len(barrels)):
-        colors.append([barrels[i].color,i])
-    for i in ["red", "orange", "yellow"]:
-        await collect (barrels, i, colors)
-
-async def collect(barrels, color, colors):
-    for idx,i in enumerate(colors):
-        if i[0]==color: 
-            await pickup(barrels, i[1])
-            await rotate(len(colors)*25)
-            await move(120,70)
-            await drop(barrels)
-            colors[idx][0] = "done"
+barrels = await scan()
+for i in range(len(barrels)):
+    await output("starting barrel" +str(i))
+    barrels = await pickup(barrels, i)
+    await rotate(i*10)
+    await move(180, 30)
+    barrels = await drop(barrels)
+    await output(str(i)+" is complete")
