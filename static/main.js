@@ -76,10 +76,11 @@ websocket.onmessage = (event) => {
         }
     }
     else if (event.data.startsWith("dropped")) {
+        var info = event.data.split(" ");
         for (var i = 0; i < barrels.length; i++) {
             if (barrels[i].attached == "yes") {
                 barrels[i].attached = "no";
-                barrels[i].position = event.data.split(" ").slice(1);
+                barrels[i].position = [parseFloat(info[1]), parseFloat(info[2])]
             }
         }
     }
