@@ -49,6 +49,7 @@ class Arm:
             self.beam1.endy = self.beam1.length * math.sin(self.beam1.t)+self.beam0.length
             self.beam2.endx = self.beam1.endx - self.beam2.length * math.cos(self.beam1.t + self.beam2.t)
             self.beam2.endy = self.beam1.endy - self.beam2.length * math.sin(self.beam1.t + self.beam2.t)
+            self.beam3.endx = self.beam2.endx+self.beam3.length
             self.beam1.centerx = (self.beam1.endx)/2
             self.beam1.centery = (self.beam1.endy+self.beam0.length)/2
             self.beam2.centerx = (self.beam1.endx+self.beam2.endx)/2

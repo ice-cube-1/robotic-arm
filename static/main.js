@@ -77,10 +77,12 @@ websocket.onmessage = (event) => {
     }
     else if (event.data.startsWith("dropped")) {
         var info = event.data.split(" ");
+        console.log("here", info)
         for (var i = 0; i < barrels.length; i++) {
             if (barrels[i].attached == "yes") {
                 barrels[i].attached = "no";
                 barrels[i].position = [parseFloat(info[1]), parseFloat(info[2])]
+                console.log(barrels)
             }
         }
     }
