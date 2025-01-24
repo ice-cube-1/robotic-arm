@@ -59,6 +59,8 @@ websocket.onmessage = (event) => {
                 barrels[i].attached = "no"
             }
         }
+    } else if (event.data.startsWith("barrelnext")) {
+        barrels[parseInt(event.data.substr(event.data.indexOf(" ") +1))].attached = "next";
     } else if (event.data.startsWith("output")) {
         const actualout = event.data.substr(event.data.indexOf(" ") + 1)
         if (actualout == "clear") {

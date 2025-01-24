@@ -45,7 +45,7 @@ class Camera:
         if type(contours) != int:
             w = cv2.boundingRect(contours)[2]
             distance = 46600/w
-            return distance-60, color
+            return distance-40, color
         else:
             return 0, "red"
     
