@@ -96,7 +96,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);
-    var colors = { "red": [255, 0, 0, 255], "yellow": [255, 200, 0, 255],"green": [0, 150, 150, 255], "blue": [0, 50, 255, 255] };
+    var colors = { "red": [255, 0, 0, 255], "yellow": [255, 200, 0, 255], "green": [0, 150, 150, 255], "blue": [0, 50, 255, 255] };
     for (let i = 0; i < barrels.length; i++) {
         if (barrels[i].attached == "yes") {
             loadTexture(gl, new Uint8Array(colors[barrels[i].color]));
@@ -111,6 +111,7 @@ function drawScene(gl, programInfo, buffers, cameraRotationX, cameraRotationY, p
     mat4.copy(modelViewMatrix, realinitialmatrix);
     for (let i = 0; i < barrels.length; i++) {
         if (barrels[i].attached != "yes") {
+            console.log(colors[barrels[i].color]);
             loadTexture(gl, new Uint8Array(colors[barrels[i].color]));
             const initialMatrix = mat4.clone(modelViewMatrix);
             mat4.translate(modelViewMatrix, modelViewMatrix, [barrels[i].position[0] * 2, -15, barrels[i].position[1] * 2]);
@@ -134,7 +135,7 @@ function drawSceneForPicking(gl, programInfo, buffers, cameraRotationX, cameraRo
     const zFar = 5000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    const modelViewMatrix = mat4.create();
+    let modelViewMatrix = mat4.create();
     const xpos = -zoom * Math.sin(cameraRotationX) * Math.cos(cameraRotationY);
     const ypos = zoom * Math.sin(cameraRotationY);
     const zpos = zoom * Math.cos(cameraRotationX) * Math.cos(cameraRotationY);

@@ -99,8 +99,8 @@ function drawScene(gl: WebGLRenderingContext, programInfo: ProgramInfo, buffers:
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     mat4.copy(modelViewMatrix, initialMatrix);    
-    var colors = {"red":[255,0,0,255], "yellow": [255,200,0,255], "blue": [0,50,255,255]}
-        for (let i = 0; i<barrels.length; i++) {
+    var colors = { "red": [255, 0, 0, 255], "yellow": [255, 200, 0, 255],"green": [0, 150, 150, 255], "blue": [0, 50, 255, 255] };
+    for (let i = 0; i<barrels.length; i++) {
         if (barrels[i].attached == "yes") {   
             loadTexture(gl, new Uint8Array(colors[barrels[i].color]));
             const initialMatrix = mat4.clone(modelViewMatrix);
@@ -136,7 +136,7 @@ function drawSceneForPicking(gl: WebGLRenderingContext, programInfo: ProgramInfo
     const canvas = gl.canvas;
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 1000.0;
+    const zFar = 5000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     let modelViewMatrix = mat4.create();

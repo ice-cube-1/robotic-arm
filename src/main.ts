@@ -52,6 +52,13 @@ websocket.onmessage = (event) => {
         img.src = `static/image.jpg?${Math.ceil(Math.random() * 1000)}`;        
     } else if (event.data == "error") {
         (document.getElementById("error") as HTMLElement).textContent = "Cannot reach X: " +(document.getElementById("xpos") as HTMLInputElement).value+" Y: "+(document.getElementById("ypos") as HTMLInputElement).value;
+    } else if (event.data == "barrelerror") {
+        (document.getElementById("error") as HTMLElement).textContent = "Cannot reach barrel";
+        for (let i = 0; i<barrels.length; i++) {
+            if (barrels[i].attached == "next") {
+                barrels[i].attached = "no"
+            }
+        }
     } else if (event.data.startsWith("output")) {
         const actualout = event.data.substr(event.data.indexOf(" ") + 1)
         if (actualout == "clear") {
@@ -61,7 +68,7 @@ websocket.onmessage = (event) => {
         }
     } else if (event.data.startsWith("barrel ")) {
         var info = event.data.split(" ")
-        barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255,0], attached:"no", color: info[3]})
+        barrels.push({position: [parseFloat(info[1]),parseFloat(info[2])], colorID:[255,barrels.length*10,0,255], attached:"no", color: info[3]})
     } else if (event.data.startsWith("stepperpos")) {
         stepperpos=parseInt(event.data.split(" ")[1])
         console.log(stepperpos)
@@ -74,13 +81,15 @@ websocket.onmessage = (event) => {
             }
         }
     } else if (event.data.startsWith("dropped")) {
-        for (var i = 0; i<barrels.length; i++) {
+        var info = event.data.split(" ");
+        for (var i = 0; i < barrels.length; i++) {
             if (barrels[i].attached == "yes") {
-                barrels[i].attached = "no"
-                barrels[i].position = event.data.split(" ").slice(1)
+                barrels[i].attached = "no";
+                barrels[i].position = [parseFloat(info[1]), parseFloat(info[2])]
             }
         }
-    } else if (event.data == "clearscan") {
+    }
+    else if (event.data == "clearscan") {
         var newbarrels = []
         for (var i = 0; i<barrels.length; i++) {
             if (barrels[i].attached == "yes") {  
@@ -170,7 +179,7 @@ function main() {
     const buffers = initBuffers(gl) as Buffers;
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     function render() {
-        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1500, angle, barrels, stepperpos);
+        drawScene(gl, programInfo, buffers, mousePos.x, mousePos.y, positions, 1800, angle, barrels, stepperpos);
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -183,7 +192,7 @@ function main() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         console.log(x,y)
-        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1500, barrels);
+        drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1800, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
         const scale = 255/Math.max(...pixels.subarray(0,3))

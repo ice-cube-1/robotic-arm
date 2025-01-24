@@ -40,11 +40,12 @@ websocket.onmessage = (event) => {
     }
     else if (event.data == "error") {
         document.getElementById("error").textContent = "Cannot reach X: " + document.getElementById("xpos").value + " Y: " + document.getElementById("ypos").value;
-    } else if (event.data == "barrelerror") {
+    }
+    else if (event.data == "barrelerror") {
         document.getElementById("error").textContent = "Cannot reach barrel";
-        for (let i = 0; i<barrels.length; i++) {
+        for (let i = 0; i < barrels.length; i++) {
             if (barrels[i].attached == "next") {
-                barrels[i].attached = "no"
+                barrels[i].attached = "no";
             }
         }
     }
@@ -80,7 +81,7 @@ websocket.onmessage = (event) => {
         for (var i = 0; i < barrels.length; i++) {
             if (barrels[i].attached == "yes") {
                 barrels[i].attached = "no";
-                barrels[i].position = [parseFloat(info[1]), parseFloat(info[2])]
+                barrels[i].position = [parseFloat(info[1]), parseFloat(info[2])];
             }
         }
     }
@@ -170,7 +171,6 @@ function main() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         console.log(x, y);
-        console.log(barrels)
         drawSceneForPicking(gl, programInfo, buffers, mousePos.x, mousePos.y, 1800, barrels);
         var pixels = new Uint8Array(4);
         gl.readPixels(x, rect.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
