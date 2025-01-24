@@ -18,7 +18,7 @@ async def scan(arm: Arm, camera: Camera, websocket: websockets.WebSocketServerPr
             sleep(2)
             distance,color =camera.distance()
             print(distance,color)
-            while 90 < distance < 400 and (5 < arm.stepperPos%200 < 195):
+            while 90 < distance < 300 and (5 < arm.stepperPos%200 < 195):
                 move = camera.getCentral()
                 print(distance,move)
                 if abs(move) <= 100:
@@ -88,8 +88,9 @@ async def pickup(arm: Arm, camera, websocket: websockets.WebSocketServerProtocol
 async def drop(arm: Arm, websocket: websockets.WebSocketServerProtocol, barrels: list[Barrel]) -> list[Barrel]:
     for i in range(len(barrels)):
         if barrels[i].gripped==True:
-            barrels[i] = Barrel(arm.stepperPos, arm.beam3.endy, barrels[i].color)
-            barrels[i].gripped = False
+            barrels[i] = Barrel(arm.stepperPos, arm.beam3.endx, barrels[i].color)
+            print(arm.beam3.endy)
+            print(barrels[i].getData())
             await websocket.send("dropped "+barrels[i].getData())
     arm.move_claw(45)
     return barrels
